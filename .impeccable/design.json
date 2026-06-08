@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-07T21:09:00Z",
+  "title": "Design System: Retro Windows Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Redmond Blue", "canonical": "oklch(28% 0.12 245)", "tonalRamp": ["#03162b", "#06284e", "#0a3b73", "#124f92", "#1d6eb1", "#3fa2d7", "#9bd4f0", "#e0f2fe"] },
+      "primary-hi": { "role": "accent", "displayName": "Active Accent", "canonical": "oklch(42% 0.18 250)", "tonalRamp": ["#051c33", "#0b325c", "#1d5ea8", "#2d76c6", "#4a92e1", "#80b6f2", "#c4dcfc", "#ecf4ff"] },
+      "neutral-bg": { "role": "neutral", "displayName": "Beige Panel", "canonical": "oklch(90% 0.02 85)", "tonalRamp": ["#36342e", "#5c5950", "#878378", "#b3afa3", "#d7d2c3", "#e6e2d4", "#f2efe6", "#faf9f6"] },
+      "chrome": { "role": "neutral", "displayName": "Chrome Silver", "canonical": "oklch(79% 0.00 0)", "tonalRamp": ["#1c1c1c", "#404040", "#808080", "#a0a0a0", "#c0c0c0", "#dcdcdc", "#f0f0f0", "#ffffff"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Arcade Header", "purpose": "Main desktop launcher headers and arcade-themed titles." },
+      "body": { "displayName": "System Body", "purpose": "Primary readable interface elements, descriptions, and list content." }
+    },
+    "shadows": [
+      { "name": "active-glow", "value": "0 12px 32px rgba(0, 0, 0, 0.3)", "purpose": "Soft drop shadow to separate focused active window from background windows." }
+    ],
+    "motion": [
+      { "name": "instant", "value": "0s", "purpose": "Retro immediate state transitions, respecting retro CRT speed." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "576px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "992px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Window Chrome",
+      "kind": "card",
+      "refersTo": "window",
+      "description": "Standard draggable layout container representing an OS-style window.",
+      "html": "<div class=\"ds-window\">\n  <div class=\"ds-window-titlebar\">\n    <div class=\"ds-window-title\">\n      <span class=\"ds-window-icon\">W</span>\n      <span>My Application</span>\n    </div>\n  </div>\n  <div class=\"ds-window-body\">\n    <p>Application content goes here...</p>\n  </div>\n</div>",
+      "css": ".ds-window { display: flex; flex-direction: column; border: 2px solid #c0c0c0; background: #e6e2d4; box-shadow: 0 0 0 1px #404040, inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080; overflow: hidden; font-family: Tahoma, Geneva, sans-serif; }\n.ds-window-titlebar { display: flex; align-items: center; justify-content: space-between; min-height: 30px; padding: 4px 8px; background: linear-gradient(90deg, #0a3b73, #1d5ea8); color: #ffffff; font-weight: bold; font-size: 12px; }\n.ds-window-icon { display: inline-grid; place-items: center; width: 18px; height: 18px; border: 1px solid rgba(255, 255, 255, 0.6); background: rgba(255, 255, 255, 0.12); margin-right: 6px; }\n.ds-window-body { padding: 14px; background: #e6e2d4; font-size: 12px; line-height: 1.4; color: #111111; }"
+    },
+    {
+      "name": "Submit Button",
+      "kind": "button",
+      "refersTo": "launcher-button",
+      "description": "Primary action button with physical bevel and active depth click.",
+      "html": "<button class=\"ds-btn-submit\">GENERATE APP</button>",
+      "css": ".ds-btn-submit { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 16px; border: 1px solid #404040; border-top-color: #ffffff; border-left-color: #ffffff; background: #c0c0c0; color: #111111; font-family: Tahoma, sans-serif; font-size: 12px; font-weight: bold; cursor: pointer; }\n.ds-btn-submit:active { border-top-color: #404040; border-left-color: #404040; border-right-color: #ffffff; border-bottom-color: #ffffff; padding: 1px 15px 0 17px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Tactile Arcade",
+    "overview": "This system represents a playful, blocky, and vector-inspired layout designed to mimic a vintage desktop environment. It focuses on highly interactive desktop metaphors—draggable windows, desktop icons, a taskbar, and a start menu—while utilizing modern layout discipline.",
+    "keyCharacteristics": [
+      "Crisp double-border bevel boundaries.",
+      "Radial desktop backgrounds simulating CRT screen glows.",
+      "Custom vector button states and retro typography."
+    ],
+    "rules": [
+      { "name": "The CRT Border Rule", "body": "All interactive containers must implement explicit border shadows: a 1px outset highlight (#ffffff on top/left, #808080 on bottom/right) to simulate physical depth.", "section": "colors" }
+    ],
+    "dos": [
+      "Do use exact 1px white border-top/border-left and 1px grey border-bottom/border-right to create bevel effects.",
+      "Do preserve the CRT scanline overlays across the entire desktop body to maintain the retro arcade theme.",
+      "Do respect the user's system preferences for reduced motion by disabling transform scaling when dragging windows."
+    ],
+    "donts": [
+      "Don't use border-left/border-right greater than 1px as a colored accent stripe on cards.",
+      "Don't use Tailwind gradients or glassmorphism on windows; design elements must feel solid and physical.",
+      "Don't allow window text to overflow its container. Use responsive flex-wrapping."
+    ]
+  }
+}
