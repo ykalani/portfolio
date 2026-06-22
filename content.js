@@ -24,6 +24,7 @@ export const portfolio = {
     { id: "experience", label: "Experience", icon: "briefcase" },
     { id: "contact", label: "Contact", icon: "mail" },
     { id: "resume", label: "Resume", icon: "file" },
+    { id: "settings", label: "Theme Settings", icon: "sliders" },
   ],
   windows: [
     {
@@ -84,6 +85,18 @@ export const portfolio = {
       y: 96,
       width: 380,
       height: 280,
+      openByDefault: false,
+    },
+    {
+      id: "settings",
+      label: "Theme Settings",
+      glyph: "sliders",
+      title: "Control Panel - Theme Settings",
+      type: "settings",
+      x: 320,
+      y: 150,
+      width: 460,
+      height: 380,
       openByDefault: false,
     },
   ],

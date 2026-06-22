@@ -3,6 +3,25 @@ const fs = require("fs");
 const path = require("path");
 const https = require("https");
 
+// Load environment variables from .env file if it exists
+try {
+  const envPath = path.join(__dirname, ".env");
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, "utf-8");
+    envContent.split("\n").forEach((line) => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith("#") && trimmed.includes("=")) {
+        const index = trimmed.indexOf("=");
+        const key = trimmed.substring(0, index).trim();
+        const value = trimmed.substring(index + 1).trim().replace(/^['"]|['"]$/g, ""); // strip quotes
+        process.env[key] = value;
+      }
+    });
+  }
+} catch (e) {
+  console.warn("Could not load .env file:", e.message);
+}
+
 const root = __dirname;
 const port = Number(process.env.PORT || 4173);
 
@@ -23,7 +42,7 @@ You must return JSON ONLY. No markdown code blocks, no code fences, no leading/t
 Schema:
 {
   "title": "string",
-  "kind": "custom" | "calculator" | "notes" | "todo" | "timer" | "dashboard" | "chat" | "browser",
+  "kind": "custom",
   "icon": "string",
   "summary": "string",
   "accent": "string",
@@ -31,30 +50,24 @@ Schema:
   "window": { "width": number, "height": number },
   "tags": ["string"],
   "html": "string",
-  "css": "string",
+  "css": "",
   "js": "string",
-  "panels": [
-    { "title": "string", "body": "string", "bullets": ["string"] }
-  ],
-  "actions": [
-    { "label": "string", "intent": "string" }
-  ],
-  "notes": ["string"]
+  "panels": [],
+  "actions": [],
+  "notes": []
 }
 
-Guidelines for custom apps:
-- Design the app to be fully functional within the HTML and JS properties.
-- To achieve ultra-fast generation (under 2 seconds), you MUST set the "css" property to an empty string ("") and leverage the pre-defined global utility CSS classes for all styling.
-- Pre-defined retro utility CSS classes you should use:
-  - ".retro-panel" : Cream clay container background with a black border.
-  - ".retro-grid" : A CSS grid for layout.
-  - ".retro-card" : An inner clay-panel with outline and flat shadow.
-  - ".retro-btn" : Tactile cream/gold physical button with push animation.
-  - ".retro-input" : Styled retro form text field or area.
-  - ".retro-terminal" : Matrix-green black monospace terminal console block.
-  - Use custom inline style attributes for custom layouts, colors, spacing, alignments, or dimensions. Do not write custom CSS rules in the "css" field.
-- Ensure the app is entirely self-contained. Do not rely on external CDN scripts or stylesheet files.
-- For JS, always query inside 'container', e.g., 'const input = container.querySelector("input");'. Never write global document.querySelector to prevent conflicts.
+Rules for speed and quality:
+1. CSS Constraint: Always set the "css" field to an empty string "". Write NO custom styles there.
+2. Leverage Theme Utilities: Build your interface exclusively using these pre-styled, theme-aware utility classes:
+   - ".retro-panel" : Primary container background (automatically adapts to cream panel, neon dark, or frosted glass depending on active theme).
+   - ".retro-card" : Inner card block with physical borders and dropshadows.
+   - ".retro-btn" : Dynamic interactive button (handles active press, glows, and theme coloring).
+   - ".retro-input" : Styled input text fields.
+   - ".retro-terminal" : Monospaced black console output block (glows neon green in Matrix theme).
+3. Layout Utilities: Use inline CSS styling ONLY for flex alignment and simple spacing, e.g., 'style="display:flex; flex-direction:column; gap:10px; padding:12px;"'.
+4. JS Scoping: All JS DOM selectors MUST query inside 'container' (e.g. 'container.querySelector("#btn")'). Never query the global 'document'.
+5. Keep it Concise: Limit HTML to essential interactive elements and JS to basic state modification. Keep output short to minimize latency.
 `;
 
 function generateAppManifest(prompt, callback) {

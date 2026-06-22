@@ -2191,3 +2191,336 @@ body::before {
   word-break: break-all;
 }
 
+/* ==========================================
+   THEME STYLING OVERRIDES
+   ========================================== */
+
+/* 1. Classic Windows 95 Theme */
+body.theme-classic {
+  --desktop-1: #008080; /* Teal background */
+  --desktop-2: #008080;
+  --wallpaper-hi: transparent;
+  --wallpaper-lo: transparent;
+  --panel: #d4d0c8;
+  --panel-2: #dfdfdf;
+  --chrome: #d4d0c8;
+  --chrome-hi: #ffffff;
+  --chrome-lo: #808080;
+  --chrome-dark: #000000;
+  --accent: #000080; /* Navy Active Titlebar */
+  --accent-hi: #1084d0;
+  --text: #000000;
+  --muted: #404040;
+  --shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+}
+body.theme-classic .window {
+  border-radius: 0;
+  border-width: 2px;
+  box-shadow: 
+    inset 1px 1px 0px #fff,
+    inset -1px -1px 0px #808080,
+    4px 4px 0px rgba(0,0,0,0.5);
+}
+body.theme-classic .window__titlebar {
+  border-bottom: 2px solid #d4d0c8;
+  border-radius: 0;
+}
+body.theme-classic .window__control {
+  border-radius: 0;
+}
+
+/* 2. Synthwave Cyberpunk Theme */
+body.theme-cyberpunk {
+  --desktop-1: #0d0115;
+  --desktop-2: #220538;
+  --wallpaper-hi: rgba(255, 0, 128, 0.25);
+  --wallpaper-lo: rgba(0, 240, 255, 0.15);
+  --panel: #140520;
+  --panel-2: #240a35;
+  --chrome: #ff007f;
+  --chrome-hi: #ff54b0;
+  --chrome-lo: #9c004d;
+  --chrome-dark: #000000;
+  --accent: #ff007f;
+  --accent-hi: #00ffff;
+  --text: #00ffff;
+  --muted: #a67bb5;
+  --shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+}
+body.theme-cyberpunk::before {
+  opacity: 0.65;
+  background:
+    linear-gradient(to bottom, rgba(255, 0, 128, 0.05), transparent 12%),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 240, 255, 0.05) 0,
+      rgba(0, 240, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+}
+body.theme-cyberpunk .window {
+  border: 2px solid #ff007f;
+  box-shadow: 0 0 15px rgba(255, 0, 128, 0.4), inset 0 0 5px rgba(255, 0, 128, 0.3);
+}
+body.theme-cyberpunk .window.is-active {
+  border: 2px solid #00ffff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 8px rgba(0, 255, 255, 0.3);
+}
+body.theme-cyberpunk .window__titlebar {
+  border-bottom: 2px solid #ff007f;
+}
+body.theme-cyberpunk .window.is-active .window__titlebar {
+  border-bottom: 2px solid #00ffff;
+}
+body.theme-cyberpunk .window__control {
+  border-color: #ff007f;
+  background: #140520;
+  color: #ff007f;
+}
+body.theme-cyberpunk .window__control:hover {
+  background: #ff007f;
+  color: #000;
+}
+body.theme-cyberpunk .button, 
+body.theme-cyberpunk .launcher__submit {
+  border: 1px solid #ff007f;
+  background: #ff007f;
+  color: #000;
+  text-shadow: none;
+  box-shadow: 0 0 10px rgba(255, 0, 128, 0.4);
+}
+body.theme-cyberpunk .button:hover {
+  background: #00ffff;
+  border-color: #00ffff;
+  color: #000;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+/* 3. Glassmorphic Glow Theme */
+body.theme-glassmorphic {
+  background: radial-gradient(circle at 10% 20%, #7f00ff 0%, transparent 45%),
+              radial-gradient(circle at 90% 10%, #ff007f 0%, transparent 45%),
+              radial-gradient(circle at 50% 80%, #00ffff 0%, transparent 45%),
+              linear-gradient(135deg, #181124, #0b0712) !important;
+  background-size: 200% 200%;
+  animation: moveGradient 20s ease infinite;
+  --panel: rgba(255, 255, 255, 0.12);
+  --panel-2: rgba(255, 255, 255, 0.06);
+  --chrome: rgba(255, 255, 255, 0.18);
+  --chrome-hi: rgba(255, 255, 255, 0.4);
+  --chrome-lo: rgba(255, 255, 255, 0.08);
+  --chrome-dark: rgba(255, 255, 255, 0.15);
+  --accent: rgba(127, 0, 255, 0.45);
+  --accent-hi: rgba(255, 0, 127, 0.45);
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.65);
+  --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+@keyframes moveGradient {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+body.theme-glassmorphic .window {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(18px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+}
+body.theme-glassmorphic .window.is-active {
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 8px 32px 0 rgba(127, 0, 255, 0.25) !important;
+}
+body.theme-glassmorphic .window__titlebar {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(18px) !important;
+}
+body.theme-glassmorphic .window.is-active .window__titlebar {
+  background: linear-gradient(90deg, rgba(127, 0, 255, 0.45), rgba(255, 0, 127, 0.45)) !important;
+}
+body.theme-glassmorphic .window__body {
+  background: transparent !important;
+}
+body.theme-glassmorphic .window__control {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+}
+body.theme-glassmorphic .window__control:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+body.theme-glassmorphic .launcher {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px !important;
+}
+body.theme-glassmorphic .button, 
+body.theme-glassmorphic .launcher__submit {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+body.theme-glassmorphic .button:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+body.theme-glassmorphic .button--ghost {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 4. Matrix Terminal Theme */
+body.theme-matrix {
+  --desktop-1: #000000;
+  --desktop-2: #020b02;
+  --wallpaper-hi: transparent;
+  --wallpaper-lo: transparent;
+  --panel: #050d04;
+  --panel-2: #091707;
+  --chrome: #0a2007;
+  --chrome-hi: #1eff00;
+  --chrome-lo: #041203;
+  --chrome-dark: #000000;
+  --accent: #0b2f07;
+  --accent-hi: #1eff00;
+  --text: #1eff00;
+  --muted: #4e8a45;
+  --shadow: 0 0 10px rgba(30, 255, 0, 0.35);
+  --font: "Courier New", Courier, monospace;
+  --display-font: "Courier New", Courier, monospace;
+}
+body.theme-matrix::before {
+  opacity: 0.8;
+  background:
+    linear-gradient(to bottom, rgba(30, 255, 0, 0.03), transparent 12%),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(30, 255, 0, 0.04) 0,
+      rgba(30, 255, 0, 0.04) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+}
+body.theme-matrix * {
+  font-family: var(--font) !important;
+  text-shadow: 0 0 4px rgba(30, 255, 0, 0.4);
+}
+body.theme-matrix .window {
+  border: 1px solid #1eff00 !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 12px rgba(30, 255, 0, 0.3) !important;
+}
+body.theme-matrix .window.is-active {
+  border: 1px solid #1eff00 !important;
+  box-shadow: 0 0 18px rgba(30, 255, 0, 0.6), 0 0 0 1px #1eff00 !important;
+}
+body.theme-matrix .window__titlebar {
+  border-bottom: 1px solid #1eff00 !important;
+  border-radius: 0 !important;
+}
+body.theme-matrix .window__control {
+  border: 1px solid #1eff00 !important;
+  border-radius: 0 !important;
+  background: #000 !important;
+  color: #1eff00 !important;
+  box-shadow: none !important;
+}
+body.theme-matrix .window__control:hover {
+  background: #1eff00 !important;
+  color: #000 !important;
+}
+body.theme-matrix .button,
+body.theme-matrix .launcher__submit {
+  border: 1px solid #1eff00 !important;
+  background: #000 !important;
+  color: #1eff00 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body.theme-matrix .button:hover {
+  background: #1eff00 !important;
+  color: #000 !important;
+}
+
+/* Theme card grid style settings */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.theme-card {
+  border: 1px solid var(--chrome-dark);
+  border-top-color: var(--chrome-hi);
+  border-left-color: var(--chrome-hi);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 1px 1px 0 var(--chrome-hi), inset -1px -1px 0 rgba(0, 0, 0, 0.12);
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.theme-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+.theme-card.is-active-theme {
+  border-top-color: var(--chrome-dark) !important;
+  border-left-color: var(--chrome-dark) !important;
+  border-right-color: var(--chrome-hi) !important;
+  border-bottom-color: var(--chrome-hi) !important;
+  background: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.15) !important;
+  transform: none !important;
+}
+.theme-card__preview {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px dashed var(--chrome-dark);
+  border-radius: 4px;
+}
+.theme-card__dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #000;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+.theme-card__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.theme-card__name {
+  font-size: 13px;
+  text-align: center;
+}
+.theme-card__status {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+.theme-card.is-active-theme .theme-card__status {
+  color: var(--accent) !important;
+  font-weight: bold;
+}
+

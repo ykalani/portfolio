@@ -66,6 +66,9 @@ const DEFAULT_APP_STATES = {
   browser: {
     url: "vibe://welcome",
     history: ["vibe://welcome"]
+  },
+  settings: {
+    theme: "default"
   }
 };
 
@@ -598,6 +601,8 @@ function renderWindowBody(type) {
           </div>
         </section>
       `;
+    case "settings":
+      return renderSettingsApp();
     default:
       return `<p>Content unavailable.</p>`;
   }
@@ -677,6 +682,66 @@ function renderDefaultGeneratedWindowBody(window) {
       <ul class="resume-list">
         ${window.notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}
       </ul>
+    </section>
+  `;
+}
+
+function applyTheme(themeName) {
+  const themes = ["theme-default", "theme-classic", "theme-cyberpunk", "theme-glassmorphic", "theme-matrix"];
+  themes.forEach(t => document.body.classList.remove(t));
+  document.body.classList.add(`theme-${themeName}`);
+  
+  if (!state.appStates.settings) {
+    state.appStates.settings = { theme: "default" };
+  }
+  state.appStates.settings.theme = themeName;
+  
+  const settingsWindow = getAllWindows().find(w => w.id === "settings" && state.windows[w.id]?.open);
+  if (settingsWindow) {
+    const bodyElement = app.querySelector(`[data-window-id="settings"] .window__body`);
+    if (bodyElement) {
+      bodyElement.innerHTML = renderSettingsApp();
+    }
+  }
+  
+  persistState();
+}
+
+function renderSettingsApp() {
+  const currentTheme = state.appStates.settings?.theme || "default";
+  const themes = [
+    { id: "default", name: "Retro Purple", colors: ["#3b2d54", "#fcf8ee", "#ffd166", "#653c94"] },
+    { id: "classic", name: "Windows 95 Classic", colors: ["#008080", "#d4d0c8", "#d4d0c8", "#000080"] },
+    { id: "cyberpunk", name: "Synthwave Neon", colors: ["#0d0115", "#1a0826", "#ff007f", "#00ffff"] },
+    { id: "glassmorphic", name: "Glassmorphic Glow", colors: ["#1a1528", "rgba(255,255,255,0.45)", "rgba(255,255,255,0.5)", "#653c94"] },
+    { id: "matrix", name: "Matrix Terminal", colors: ["#000000", "#0a0f08", "#0f2c0b", "#1eff00"] }
+  ];
+
+  return `
+    <section class="panel settings-app">
+      <p class="eyebrow">Control Panel</p>
+      <h2 class="headline">Theme Selector</h2>
+      <p class="lede">Choose a visual system to transform your retro desktop environment instantly.</p>
+      
+      <div class="theme-grid">
+        ${themes.map(t => {
+          const active = t.id === currentTheme ? "is-active-theme" : "";
+          return `
+            <div class="theme-card ${active}" data-action="set-theme" data-theme="${t.id}">
+              <div class="theme-card__preview">
+                <span class="theme-card__dot" style="background-color: ${t.colors[0]}" title="Desktop Background"></span>
+                <span class="theme-card__dot" style="background-color: ${t.colors[1]}" title="Window Panel"></span>
+                <span class="theme-card__dot" style="background-color: ${t.colors[2]}" title="Chrome/Controls"></span>
+                <span class="theme-card__dot" style="background-color: ${t.colors[3]}" title="Title Bar"></span>
+              </div>
+              <div class="theme-card__info">
+                <strong class="theme-card__name">${escapeHtml(t.name)}</strong>
+                <span class="theme-card__status">${t.id === currentTheme ? "Active" : "Apply Theme"}</span>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
     </section>
   `;
 }
@@ -2061,6 +2126,14 @@ function handleClick(event) {
     }
   }
 
+  // Set theme click
+  const setThemeBtn = event.target.closest("[data-action='set-theme']");
+  if (setThemeBtn) {
+    const themeName = setThemeBtn.dataset.theme;
+    applyTheme(themeName);
+    return;
+  }
+
   // Calculator key click
   const calcKeyBtn = event.target.closest("[data-calc-key]");
   if (calcKeyBtn) {
@@ -2529,6 +2602,8 @@ function bindEvents() {
 }
 
 function bootstrap() {
+  const currentTheme = state.appStates.settings?.theme || "default";
+  applyTheme(currentTheme);
   render();
   bindEvents();
   
