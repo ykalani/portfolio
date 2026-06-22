@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "skills": {
+    "paths": [
+      "C:\\Users\\yash\\.claude\\plugins\\cache\\vercel\\vercel-plugin\\5f3f0ad7931a\\skills"
+    ]
+  },
+  "mcp": {
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com",
+      "enabled": true
+    }
+  }
+}

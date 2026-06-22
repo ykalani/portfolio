@@ -1,6 +1,3 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/api/forge", "destination": "/api/forge" }
-  ]
+  "cleanUrls": true
 }
