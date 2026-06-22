@@ -1,19 +1,23 @@
 # IN-PROGRESS
 
 ## Current Work
-- Completed all features of the Vibe OS retro windows portfolio MVP, including a fully functional offline-first dynamic application generation engine.
+- Fixing Vercel deployment — `server.js` uses `http.createServer().listen()` which crashes on Vercel's serverless runtime.
 
 ## Active Plan
-1. None. The desktop shell, base apps, and custom generation engine are 100% functional, bug-free, and ready for use.
+- [x] Create `vercel.json` for static file serving
+- [x] Create `api/forge.js` as proper Vercel serverless function
+- [x] Remove `start` script from `package.json` to prevent auto-detection
+- [ ] Deploy to Vercel and verify
 
 ## Recently Completed
-- Fixed the critical parameter shadowing bug in `app.js` (`renderDynamicCustomApp`) that shadowed the global `window` object and prevented dynamic scripts from running.
-- Implemented a complete suite of offline-first custom application templates in `generator.js` (Paint canvas drawer, Retro Snake game, Weather terminal lookup, CD/Tape audio synth deck, and Forge Console board) with scoped CSS and AudioContext synthesis.
-- Validated module syntax and verified that the local server compiles and serves code cleanly.
+- Fixed Vercel `FUNCTION_INVOCATION_FAILED` by moving API to `api/forge.js` and configuring static hosting
+- Added theme system (5 themes: Retro Purple, Windows 95, Synthwave, Glassmorphic, Matrix Terminal)
+- Created Settings app with visual theme selector
+- Improved Gemini prompt contract for faster generation
+- Added AGENTS.md for workflow documentation
 
 ## Blockers
 - None.
 
 ## Next Steps
-- Host the static frontend on Vercel, Netlify, or Cloudflare Pages.
-- Configure `GEMINI_API_KEY` on the hosting environment to enable dynamic AI model generation.
+- Set `GEMINI_API_KEY` in Vercel environment variables for AI generation to work in production

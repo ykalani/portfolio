@@ -4,7 +4,6 @@
   "version": "0.1.0",
   "description": "Retro Windows-style portfolio site",
   "scripts": {
-    "dev": "node server.js",
-    "start": "node server.js"
+    "dev": "node server.js"
   }
 }
