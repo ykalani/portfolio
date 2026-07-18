@@ -1,3 +1,13 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/flashcards/:path*",
+      "destination": "https://flashcard-review-tau.vercel.app/:path*"
+    },
+    {
+      "source": "/flashcards",
+      "destination": "https://flashcard-review-tau.vercel.app"
+    }
+  ]
 }
