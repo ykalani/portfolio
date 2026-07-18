@@ -596,9 +596,24 @@ function renderWindowBody(type) {
             ${portfolio.resume.bullets.map((bullet) => `<li>${escapeHtml(bullet)}</li>`).join("")}
           </ul>
           <div class="contact-form__actions">
-            <button class="button" type="button" data-action="open-window" data-target="contact">Contact Me</button>
-            <a class="button button--ghost" href="mailto:${escapeHtml(portfolio.email)}?subject=${encodeURIComponent("Resume request")}">Request Resume</a>
+            <a class="button" href="${escapeHtml(portfolio.resume.pdfUrl)}" target="_blank" rel="noreferrer">View PDF</a>
+            <a class="button button--ghost" href="${escapeHtml(portfolio.resume.pdfUrl)}" download>Download PDF</a>
           </div>
+        </section>
+      `;
+    case "forge":
+      return `
+        <section class="forge">
+          <p>Browse the portfolio source that powers this desktop.</p>
+          <div class="forge__layout">
+            <div class="forge__files" aria-label="Portfolio files">
+              ${["index.html", "app.js", "content.js", "generator.js", "server.js", "styles.css"]
+                .map((file) => `<button type="button" data-action="view-forge-file" data-file="${file}">${file}</button>`)
+                .join("")}
+            </div>
+            <pre class="forge__code" data-forge-code>Select a file to inspect it.</pre>
+          </div>
+          <p class="forge__note">Source is read-only and limited to these public portfolio files.</p>
         </section>
       `;
     case "settings":
@@ -1832,6 +1847,19 @@ function openWindow(id) {
   render();
 }
 
+async function showForgeFile(file) {
+  const code = app.querySelector("[data-forge-code]");
+  if (!code) return;
+  code.textContent = `Loading ${file}…`;
+  try {
+    const response = await fetch(`/api/source?file=${encodeURIComponent(file)}`);
+    if (!response.ok) throw new Error("Unable to load file");
+    code.textContent = await response.text();
+  } catch (error) {
+    code.textContent = error.message;
+  }
+}
+
 function closeWindow(id) {
   const window = getWindowDefinition(id);
   const winState = state.windows[id];
@@ -2365,6 +2393,11 @@ function handleClick(event) {
 
     if (action === "open-window") {
       openWindow(target);
+      return;
+    }
+
+    if (action === "view-forge-file") {
+      showForgeFile(actionButton.dataset.file);
       return;
     }
 

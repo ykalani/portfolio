@@ -191,21 +191,95 @@ function createServer(currentPort) {
       return;
     }
 
-    const requestPath = req.url === "/" ? "/index.html" : req.url.split("?")[0];
-    const filePath = path.join(root, requestPath);
+    if (req.url.startsWith("/api/source") && req.method === "GET") {
+      const urlObj = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+      const file = urlObj.searchParams.get("file");
+      const allowedFiles = ["index.html", "app.js", "content.js", "generator.js", "server.js", "styles.css"];
+      if (!allowedFiles.includes(file)) {
+        res.statusCode = 403;
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.end("Forbidden");
+        return;
+      }
+      const filePath = path.join(root, file);
+      fs.readFile(filePath, "utf-8", (error, data) => {
+        if (error) {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "text/plain; charset=utf-8");
+          res.end("Server error");
+          return;
+        }
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.end(data);
+      });
+      return;
+    }
 
-    fs.readFile(filePath, (error, data) => {
-      if (error) {
+    if (req.url.startsWith("/api/") && req.url !== "/api/forge") {
+      const targetUrl = `http://127.0.0.1:5000${req.url}`;
+      const proxyReq = http.request(targetUrl, {
+        method: req.method,
+        headers: req.headers
+      }, (proxyRes) => {
+        res.writeHead(proxyRes.statusCode, proxyRes.headers);
+        proxyRes.pipe(res, { end: true });
+      });
+      proxyReq.on("error", (err) => {
+        res.statusCode = 502;
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.end(`Bad Gateway: ${err.message}`);
+      });
+      req.pipe(proxyReq, { end: true });
+      return;
+    }
+
+    const requestPath = req.url === "/" ? "/index.html" : req.url.split("?")[0];
+    
+    let candidatePaths;
+    if (requestPath === "/flashcards" || requestPath === "/flashcards/") {
+      candidatePaths = [path.join(root, "../flashcard-review/templates/index.html")];
+    } else if (requestPath.startsWith("/static/")) {
+      candidatePaths = [path.join(root, "../flashcard-review", requestPath)];
+    } else {
+      const normalizedPath = requestPath.endsWith("/") && requestPath !== "/"
+        ? requestPath.slice(0, -1)
+        : requestPath;
+      const paths = path.extname(normalizedPath)
+        ? [normalizedPath]
+        : [normalizedPath, `${normalizedPath}.html`, `${normalizedPath}/index.html`];
+      candidatePaths = paths.map(p => path.join(root, p));
+    }
+
+    const tryReadFile = (candidateIndex) => {
+      if (candidateIndex >= candidatePaths.length) {
         res.statusCode = 404;
         res.setHeader("Content-Type", "text/plain; charset=utf-8");
         res.end("Not found");
         return;
       }
 
-      res.statusCode = 200;
-      res.setHeader("Content-Type", mimeTypes[path.extname(filePath)] || "application/octet-stream");
-      res.end(data);
-    });
+      const filePath = candidatePaths[candidateIndex];
+      fs.readFile(filePath, (error, data) => {
+        if (error) {
+          if (error.code === "ENOENT") {
+            tryReadFile(candidateIndex + 1);
+            return;
+          }
+
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "text/plain; charset=utf-8");
+          res.end("Server error");
+          return;
+        }
+
+        res.statusCode = 200;
+        res.setHeader("Content-Type", mimeTypes[path.extname(filePath)] || "application/octet-stream");
+        res.end(data);
+      });
+    };
+
+    tryReadFile(0);
   });
 
   server.on("error", (error) => {
