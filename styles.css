@@ -2534,3 +2534,62 @@ body.theme-matrix .button:hover {
   font-weight: bold;
 }
 
+.desktop-footer {
+  position: absolute;
+  bottom: calc(var(--taskbar-h) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 1; /* Floating wallpaper background widget: sits below active windows (z-index 10+) but above wallpaper background */
+  pointer-events: auto;
+  text-align: center;
+}
+
+.desktop-footer__logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.desktop-footer__logo-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.desktop-footer__logo-link:hover {
+  transform: scale(1.15);
+}
+
+.desktop-footer__logo-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: grayscale(1) brightness(0.9);
+  opacity: 0.6;
+  transition: filter 0.15s ease, opacity 0.15s ease;
+}
+
+.desktop-footer__logo-link:hover .desktop-footer__logo-img {
+  filter: none;
+  opacity: 1;
+}
+
+.desktop-footer__copyright {
+  margin: 0;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35);
+  font-family: var(--font);
+  letter-spacing: 0.02em;
+}
