@@ -11,7 +11,6 @@ if (!fs.existsSync(LOGOS_DIR)) {
 const downloads = [
   { name: "instagram.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/d/a/h/8zpFXbrlvkEUUsBQsfgjvXMl1ceLaS9q.png" },
   { name: "linkedin.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/s/D/f/fEp4_oUv2v1nyiXdJacIHUZWAwj2q8m_.png" },
-  { name: "substack.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/U/_/t/Z6a57_XECGyibUywjYMS1ydzx8wFsTGN.png" },
   { name: "spotify.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/s/U/f/i6zozoGAIgWKSwNhRj4k7gjKRVd72uFF.png" },
   { name: "airbuds.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/f/b/Z/brB03rHvZxppdjfDv4slbkpBXdtIN3dE.png" },
   { name: "github.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/n/Q/6/1UJt1xN8u7tm3saw7lYflki4aJkyoCta.png" },
@@ -50,6 +49,16 @@ async function run() {
     console.log("Goodreads logo copied successfully.");
   } else {
     console.warn("WARNING: Goodreads logo source not found in brain folder.");
+  }
+
+  // Copy Substack
+  const brainSubstack = "C:/Users/yash/.gemini/antigravity-ide/brain/41925876-6571-4b05-9fad-ff9c315f76b9/media__1784407503527.png";
+  const destSubstack = path.join(LOGOS_DIR, "substack.png");
+  if (fs.existsSync(brainSubstack)) {
+    fs.copyFileSync(brainSubstack, destSubstack);
+    console.log("Substack logo copied successfully.");
+  } else {
+    console.warn("WARNING: Substack logo source not found in brain folder.");
   }
 
   for (const item of downloads) {
