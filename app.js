@@ -415,7 +415,7 @@ function render() {
             <img class="desktop-footer__logo-img" src="/assets/logos/chess.png" alt="Chess.com" />
           </a>
           <a class="desktop-footer__logo-link" href="https://myanimelist.net/profile/ykal" target="_blank" rel="noreferrer" title="MyAnimeList">
-            <img class="desktop-footer__logo-img" src="/assets/logos/myanimelist.ico" alt="MyAnimeList" />
+            <img class="desktop-footer__logo-img" src="/assets/logos/myanimelist.png" alt="MyAnimeList" />
           </a>
           <a class="desktop-footer__logo-link" href="https://discord.com/users/733835629926023209" target="_blank" rel="noreferrer" title="Discord">
             <img class="desktop-footer__logo-img" src="/assets/logos/discord.png" alt="Discord" />
