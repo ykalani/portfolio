@@ -9,19 +9,19 @@ if (!fs.existsSync(LOGOS_DIR)) {
 }
 
 const downloads = [
-  { name: "instagram.svg", url: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/instagram.svg" },
-  { name: "linkedin.svg", url: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/linkedin.svg" },
-  { name: "substack.svg", url: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/substack.svg" },
-  { name: "spotify.svg", url: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/spotify.svg" },
+  { name: "instagram.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/d/a/h/8zpFXbrlvkEUUsBQsfgjvXMl1ceLaS9q.png" },
+  { name: "linkedin.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/s/D/f/fEp4_oUv2v1nyiXdJacIHUZWAwj2q8m_.png" },
+  { name: "substack.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/U/_/t/Z6a57_XECGyibUywjYMS1ydzx8wFsTGN.png" },
+  { name: "spotify.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/s/U/f/i6zozoGAIgWKSwNhRj4k7gjKRVd72uFF.png" },
   { name: "airbuds.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/f/b/Z/brB03rHvZxppdjfDv4slbkpBXdtIN3dE.png" },
-  { name: "github.svg", url: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg" },
+  { name: "github.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/n/Q/6/1UJt1xN8u7tm3saw7lYflki4aJkyoCta.png" },
   { name: "beli.ico", url: "https://cdn.allmylinks.com/prod/Site/favicon/6/B/t/JBUMgOh2t8Zs_cg0Qz5DHeYwVd0N_kN3.ico" },
-  { name: "letterboxd.svg", url: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/letterboxd.svg" },
+  { name: "letterboxd.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/S/H/g/QW8csXOMwhfxgwj9Irq5p6cCPJqg0-yD.png" },
   { name: "clashroyale.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/O/1/0/OC6UeIEsJ-j8DyxaVHillDCSn3N9l5b8.png" },
   { name: "brawlstars.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/7/R/m/rRUW5dllwYuyFz11bLOLKQorJThhfhly.png" },
-  { name: "chess.svg", url: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/chessdotcom.svg" },
-  { name: "myanimelist.svg", url: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/myanimelist.svg" },
-  { name: "discord.svg", url: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/discord.svg" }
+  { name: "chess.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/A/8/Y/lfadNtfk8uwkDentTq7EQ5fWXS8a6ZcP.png" },
+  { name: "myanimelist.ico", url: "https://cdn.allmylinks.com/prod/Site/favicon/s/J/S/2G5xOS2W03l4y793oGrXRtobXIdEldjA.ico" },
+  { name: "discord.png", url: "https://cdn.allmylinks.com/prod/Site/favicon/W/T/u/8b5KHODnG78X5Bgh0KXBZASdIYjSTMn7.png" }
 ];
 
 function download(url, dest) {

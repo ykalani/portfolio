@@ -379,28 +379,28 @@ function render() {
       <footer class="desktop-footer" aria-label="Desktop Footer">
         <div class="desktop-footer__logos">
           <a class="desktop-footer__logo-link" href="https://www.instagram.com/_yashtagram" target="_blank" rel="noreferrer" title="Instagram">
-            <img class="desktop-footer__logo-img" src="/assets/logos/instagram.svg" alt="Instagram" />
+            <img class="desktop-footer__logo-img" src="/assets/logos/instagram.png" alt="Instagram" />
           </a>
           <a class="desktop-footer__logo-link" href="https://www.linkedin.com/in/ykalani" target="_blank" rel="noreferrer" title="LinkedIn">
-            <img class="desktop-footer__logo-img" src="/assets/logos/linkedin.svg" alt="LinkedIn" />
+            <img class="desktop-footer__logo-img" src="/assets/logos/linkedin.png" alt="LinkedIn" />
           </a>
           <a class="desktop-footer__logo-link" href="https://substack.com/@ykalani" target="_blank" rel="noreferrer" title="Substack">
-            <img class="desktop-footer__logo-img" src="/assets/logos/substack.svg" alt="Substack" />
+            <img class="desktop-footer__logo-img" src="/assets/logos/substack.png" alt="Substack" />
           </a>
           <a class="desktop-footer__logo-link" href="https://open.spotify.com/user/wryc9ygbfzza83otspz3wrdd2" target="_blank" rel="noreferrer" title="Spotify">
-            <img class="desktop-footer__logo-img" src="/assets/logos/spotify.svg" alt="Spotify" />
+            <img class="desktop-footer__logo-img" src="/assets/logos/spotify.png" alt="Spotify" />
           </a>
           <a class="desktop-footer__logo-link" href="https://i.airbuds.fm/ykal/yGCsWrQ6Uo" target="_blank" rel="noreferrer" title="Airbuds">
             <img class="desktop-footer__logo-img" src="/assets/logos/airbuds.png" alt="Airbuds" />
           </a>
           <a class="desktop-footer__logo-link" href="https://github.com/ykalani" target="_blank" rel="noreferrer" title="GitHub">
-            <img class="desktop-footer__logo-img" src="/assets/logos/github.svg" alt="GitHub" />
+            <img class="desktop-footer__logo-img" src="/assets/logos/github.png" alt="GitHub" />
           </a>
           <a class="desktop-footer__logo-link" href="https://beliapp.co/app/ykalani" target="_blank" rel="noreferrer" title="Beli">
             <img class="desktop-footer__logo-img" src="/assets/logos/beli.ico" alt="Beli" />
           </a>
           <a class="desktop-footer__logo-link" href="https://letterboxd.com/ykalani" target="_blank" rel="noreferrer" title="Letterboxd">
-            <img class="desktop-footer__logo-img" src="/assets/logos/letterboxd.svg" alt="Letterboxd" />
+            <img class="desktop-footer__logo-img" src="/assets/logos/letterboxd.png" alt="Letterboxd" />
           </a>
           <a class="desktop-footer__logo-link" href="https://www.goodreads.com/user/show/202569379-yash-kalani" target="_blank" rel="noreferrer" title="Goodreads">
             <img class="desktop-footer__logo-img" src="/assets/logos/goodreads.png" alt="Goodreads" />
@@ -412,13 +412,13 @@ function render() {
             <img class="desktop-footer__logo-img" src="/assets/logos/brawlstars.png" alt="Brawl Stars" />
           </a>
           <a class="desktop-footer__logo-link" href="https://link.chess.com/friend/RYQxLk" target="_blank" rel="noreferrer" title="Chess.com">
-            <img class="desktop-footer__logo-img" src="/assets/logos/chess.svg" alt="Chess.com" />
+            <img class="desktop-footer__logo-img" src="/assets/logos/chess.png" alt="Chess.com" />
           </a>
           <a class="desktop-footer__logo-link" href="https://myanimelist.net/profile/ykal" target="_blank" rel="noreferrer" title="MyAnimeList">
-            <img class="desktop-footer__logo-img" src="/assets/logos/myanimelist.svg" alt="MyAnimeList" />
+            <img class="desktop-footer__logo-img" src="/assets/logos/myanimelist.ico" alt="MyAnimeList" />
           </a>
           <a class="desktop-footer__logo-link" href="https://discord.com/users/733835629926023209" target="_blank" rel="noreferrer" title="Discord">
-            <img class="desktop-footer__logo-img" src="/assets/logos/discord.svg" alt="Discord" />
+            <img class="desktop-footer__logo-img" src="/assets/logos/discord.png" alt="Discord" />
           </a>
         </div>
         <p class="desktop-footer__copyright">2026 Yash Kalani All rights reserved.</p>

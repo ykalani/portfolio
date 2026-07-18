@@ -2575,13 +2575,11 @@ body.theme-matrix .button:hover {
   width: 20px;
   height: 20px;
   object-fit: contain;
-  filter: grayscale(1) brightness(0.9);
-  opacity: 0.6;
-  transition: filter 0.15s ease, opacity 0.15s ease;
+  opacity: 0.95;
+  transition: opacity 0.15s ease;
 }
 
 .desktop-footer__logo-link:hover .desktop-footer__logo-img {
-  filter: none;
   opacity: 1;
 }
 
