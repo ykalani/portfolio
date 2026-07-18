@@ -31,6 +31,7 @@ const mimeTypes = {
   ".js": "application/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".svg": "image/svg+xml",
+  ".png": "image/png",
   ".ico": "image/x-icon",
 };
 
@@ -231,6 +232,13 @@ function createServer(currentPort) {
         res.end(`Bad Gateway: ${err.message}`);
       });
       req.pipe(proxyReq, { end: true });
+      return;
+    }
+
+    if (req.url === "/links" || req.url === "/links/") {
+      res.statusCode = 301;
+      res.setHeader("Location", "/profiles");
+      res.end();
       return;
     }
 
