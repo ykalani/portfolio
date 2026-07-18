@@ -2,7 +2,7 @@ import { portfolio } from "./content.js";
 import { buildGeneratedApp, MASTER_APP_PROMPT } from "./generator.js";
 
 const app = document.getElementById("app");
-const storageKey = "retro-windows-portfolio:desktop-state";
+const storageKey = "portfolio:desktop-state";
 const baseWindows = portfolio.windows;
 const baseWindowById = Object.fromEntries(baseWindows.map((window) => [window.id, window]));
 

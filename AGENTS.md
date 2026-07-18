@@ -12,7 +12,7 @@ No build step. No lint/typecheck/test scripts. Edit source then refresh browser.
 ## Architecture
 
 - **Entry**: `index.html` loads `app.js` as ES module
-- **State**: `app.js` owns a plain state object. Persisted to `localStorage` key `retro-windows-portfolio:desktop-state`
+- **State**: `app.js` owns a plain state object. Persisted to `localStorage` key `portfolio:desktop-state`
 - **Content**: edit `content.js` for portfolio text (name, projects, experience, contact)
 - **Server**: `server.js` — static file server + `POST /api/forge` for Gemini app generation
 - **App Forge**: `generator.js` has offline templates (paint, snake, weather, music, console, producer-consumer). Tries Gemini API first, falls back to local
