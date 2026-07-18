@@ -60,7 +60,7 @@ Replacing `https://allmylinks.com/yash-kalani` with a prettier internal version.
   9. Goodreads (`goodreads.com/user/show/202569379-yash-kalani`)
   10. Clash Royale (`link.clashroyale.com/invite/friend/en?tag=2VGYGC8Q0`)
   11. Brawl Stars (`link.brawlstars.com/invite/friend/en/?tag=GUPPR8UYC`)
-  12. Chess.com (`link.chess.com/friend/RYQxLk`)
+  12. Chess.com (`chess.com/member/minimagnus2017`)
   13. MyAnimeList (`myanimelist.net/profile/ykal`)
   14. Discord (`discord.com/users/733835629926023209`)
 

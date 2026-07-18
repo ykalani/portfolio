@@ -1,6 +1,6 @@
-:root { color-scheme: dark; font-family: Tahoma, Verdana, sans-serif; background: #130d22; color: #fff; }
+:root { color-scheme: dark; font-family: Tahoma, Verdana, sans-serif; background: #000; color: #fff; }
 * { box-sizing: border-box; }
-body { min-height: 100vh; margin: 0; background: radial-gradient(circle at 20% 0%, #713f93 0, transparent 34rem), #130d22; }
+body { min-height: 100vh; margin: 0; background: radial-gradient(circle at 20% 0%, #0d1b4a 0, transparent 34rem), #000; }
 .profile { width: min(42rem, calc(100% - 2rem)); margin: 0 auto; padding: 2.5rem 0 4rem; }
 .back { color: #fdd66e; font-weight: 700; text-decoration: none; }
 header { text-align: center; margin: 2rem 0; }

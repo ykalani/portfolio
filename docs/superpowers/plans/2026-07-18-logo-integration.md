@@ -265,7 +265,7 @@
           </span>
           <span>GUPPR8UYC</span>
         </a>
-        <a href="https://link.chess.com/friend/RYQxLk" target="_blank" rel="noreferrer">
+        <a href="https://www.chess.com/member/minimagnus2017" target="_blank" rel="noreferrer">
           <span class="profile-link-content">
             <img src="/assets/logos/chess.svg" alt="" class="profile-link-icon" />
             Chess.com
@@ -364,7 +364,7 @@
             <a class="desktop-footer__logo-link" href="https://link.brawlstars.com/invite/friend/en/?tag=GUPPR8UYC" target="_blank" rel="noreferrer" title="Brawl Stars">
               <img class="desktop-footer__logo-img" src="/assets/logos/brawlstars.png" alt="Brawl Stars" />
             </a>
-            <a class="desktop-footer__logo-link" href="https://link.chess.com/friend/RYQxLk" target="_blank" rel="noreferrer" title="Chess.com">
+            <a class="desktop-footer__logo-link" href="https://www.chess.com/member/minimagnus2017" target="_blank" rel="noreferrer" title="Chess.com">
               <img class="desktop-footer__logo-img" src="/assets/logos/chess.svg" alt="Chess.com" />
             </a>
             <a class="desktop-footer__logo-link" href="https://myanimelist.net/profile/ykal" target="_blank" rel="noreferrer" title="MyAnimeList">
