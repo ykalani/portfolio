@@ -2676,3 +2676,129 @@ body.theme-dark .window.is-macos {
   overflow-y: auto;
 }
 
+/* macOS Top Menubar */
+.mac-menubar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 13px;
+  color: var(--text);
+  z-index: 9999;
+  font-family: var(--font);
+}
+
+body.theme-dark .mac-menubar {
+  background: rgba(0, 0, 0, 0.35);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.mac-menubar__left, .mac-menubar__right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mac-menubar__item {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.mac-menubar__item--title {
+  font-weight: 700;
+}
+
+.mac-menubar__icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  opacity: 0.95;
+}
+
+/* macOS Bottom Dock */
+.mac-dock-container {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9998;
+  pointer-events: auto;
+}
+
+.mac-dock {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 4px 8px 6px 8px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  height: 58px;
+}
+
+body.theme-dark .mac-dock {
+  background: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.mac-dock__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.mac-dock__item:hover {
+  transform: scale(1.3) translateY(-8px);
+}
+
+.mac-dock__icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.mac-dock__indicator {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text);
+  opacity: 0.7;
+  position: absolute;
+  bottom: -6px;
+  display: none;
+}
+
+.mac-dock__item.is-open .mac-dock__indicator {
+  display: block;
+}
+
+/* Shift logo grid and other elements up to clear dock & menubar */
+.desktop {
+  padding-top: 26px !important;
+  height: 100vh !important;
+}
+
+.desktop-footer {
+  bottom: 84px !important; /* Above the 58px dock + 12px margin */
+}
+
+
