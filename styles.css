@@ -2591,3 +2591,88 @@ body.theme-matrix .button:hover {
   font-family: var(--font);
   letter-spacing: 0.02em;
 }
+
+/* macOS Glassmorphic Windows */
+.window.is-macos {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+body.theme-dark .window.is-macos {
+  background: rgba(25, 25, 25, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* macOS Titlebar */
+.mac-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  height: 38px;
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  user-select: none;
+  cursor: move;
+}
+
+.mac-titlebar__dots {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  left: 14px;
+}
+
+.mac-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mac-dot--close { background: #ff5f56; }
+.mac-dot--minimize { background: #ffbd2e; }
+.mac-dot--maximize { background: #27c93f; }
+
+.mac-dot::after {
+  font-size: 8px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.mac-titlebar__dots:hover .mac-dot--close::after { content: "×"; opacity: 1; }
+.mac-titlebar__dots:hover .mac-dot--minimize::after { content: "−"; opacity: 1; }
+.mac-titlebar__dots:hover .mac-dot--maximize::after { content: "+"; opacity: 1; }
+
+.mac-titlebar__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Adjust Window content inside macOS chrome */
+.window.is-macos .window__content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 14px;
+  flex: 1;
+  overflow-y: auto;
+}
+
