@@ -24,7 +24,11 @@ try {
 // flashcard modules
 const fc = require("./fc-db");
 const groq = require("./fc-groq");
-const marked = require("marked");
+let _marked;
+async function getMarked() {
+  if (!_marked) _marked = await import("marked");
+  return _marked.marked;
+}
 
 const root = __dirname;
 const port = Number(process.env.PORT || 4173);
@@ -343,6 +347,7 @@ async function renderBlogPost(req, res, slug) {
   }
 
   const { meta, body } = readFrontmatter(content);
+  const marked = await getMarked();
   const html = await marked.parse(body);
   const postHtml = `
     <article class="blog-post">
