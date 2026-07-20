@@ -378,7 +378,7 @@ function blogPage(bodyHtml, pageTitle) {
 <body>
 <div class="blog-container">
   <div class="blog-header">
-    <a href="/blog">&larr; Blog</a>
+    <a href="/">&larr; Home</a>
   </div>
   ${bodyHtml}
 </div>
