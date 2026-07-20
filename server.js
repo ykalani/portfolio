@@ -24,6 +24,7 @@ try {
 // flashcard modules
 const fc = require("./fc-db");
 const groq = require("./fc-groq");
+const marked = require("marked");
 
 const root = __dirname;
 const port = Number(process.env.PORT || 4173);
@@ -263,6 +264,131 @@ function handleFlashcardRoute(req, res) {
   json(res, { error: "not found" }, 404);
 }
 
+// ---------- blog routes ----------
+async function handleBlogRoute(req, res) {
+  const u = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+  const pathname = u.pathname;
+
+  if (pathname === "/blog" || pathname === "/blog/") {
+    renderBlogListing(req, res);
+    return;
+  }
+
+  const slugMatch = pathname.match(/^\/blog\/(.+)$/);
+  if (slugMatch) {
+    await renderBlogPost(req, res, slugMatch[1]);
+    return;
+  }
+
+  res.statusCode = 404;
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.end("Not found");
+}
+
+function readFrontmatter(content) {
+  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  if (!match) return { meta: {}, body: content };
+  const meta = {};
+  match[1].split("\n").forEach(line => {
+    const colon = line.indexOf(": ");
+    if (colon > 0) {
+      meta[line.slice(0, colon).trim()] = line.slice(colon + 2).trim();
+    }
+  });
+  return { meta, body: match[2] };
+}
+
+function renderBlogListing(req, res) {
+  const blogDir = path.join(root, "blog");
+  let files;
+  try { files = fs.readdirSync(blogDir); } catch {
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.end(blogPage(`<p style="color:#888">No posts yet.</p>`));
+    return;
+  }
+
+  const posts = files.filter(f => f.endsWith(".md")).map(f => {
+    const content = fs.readFileSync(path.join(blogDir, f), "utf-8");
+    const { meta } = readFrontmatter(content);
+    const slug = f.replace(/\.md$/, "");
+    return { slug, title: meta.title || slug, date: meta.date || "", summary: meta.summary || "" };
+  }).sort((a, b) => b.date.localeCompare(a.date));
+
+  const items = posts.map(p => `
+    <li class="blog-post-item">
+      <h2><a href="/blog/${slug(p.slug)}">${esc(p.title)}</a></h2>
+      ${p.date ? `<div class="blog-post-date">${esc(p.date)}</div>` : ""}
+      ${p.summary ? `<p class="blog-post-summary">${esc(p.summary)}</p>` : ""}
+    </li>
+  `).join("\n");
+
+  const html = blogPage(`
+    <h1>Blog</h1>
+    <ul class="blog-posts">${items}</ul>
+  `, "Blog");
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.end(html);
+}
+
+async function renderBlogPost(req, res, slug) {
+  const filePath = path.join(root, "blog", slug + ".md");
+  let content;
+  try { content = fs.readFileSync(filePath, "utf-8"); } catch {
+    res.statusCode = 404;
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.end("Not found");
+    return;
+  }
+
+  const { meta, body } = readFrontmatter(content);
+  const html = await marked.parse(body);
+  const postHtml = `
+    <article class="blog-post">
+      <h1>${esc(meta.title || slug)}</h1>
+      ${meta.date ? `<div class="date">${esc(meta.date)}</div>` : ""}
+      ${html}
+    </article>
+  `;
+
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.end(blogPage(postHtml, meta.title || slug));
+}
+
+function blogPage(bodyHtml, pageTitle) {
+  const t = pageTitle ? `${esc(pageTitle)} — Blog` : "Blog";
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${t}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/blog.css">
+</head>
+<body>
+<div class="blog-container">
+  <div class="blog-header">
+    <a href="/blog">&larr; Blog</a>
+  </div>
+  ${bodyHtml}
+</div>
+</body>
+</html>`;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function slug(s) {
+  return encodeURIComponent(s);
+}
+
 // ---------- original server ----------
 function generateAppManifest(prompt, callback) {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -300,6 +426,12 @@ async function handleRequest(req, res) {
     // flashcard routes
     if (req.url.startsWith("/flashcards") || req.url.startsWith("/flashcards-static/")) {
       handleFlashcardRoute(req, res);
+      return;
+    }
+
+    // blog routes
+    if (req.url.startsWith("/blog")) {
+      await handleBlogRoute(req, res);
       return;
     }
 
