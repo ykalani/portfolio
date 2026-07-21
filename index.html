@@ -1,180 +1,281 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0a3b73" />
-    <title>Yash</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --ink: #111;
-      --ink-muted: #555;
-      --surface: #fff;
-      --surface-dim: #f5f5f5;
-      --border: #e0e0e0;
-      --accent: #0a3b73;
-      --accent-hover: #1d5ea8;
-      --radius: 10px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --ink: #e8e8e8;
-        --ink-muted: #999;
-        --surface: #111;
-        --surface-dim: #1a1a1a;
-        --border: #2a2a2a;
-        --accent: #5b9bd5;
-        --accent-hover: #7db8e8;
-      }
-    }
-
-    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-
-    body {
-      font-family: 'Lora', Georgia, serif;
-      background: var(--surface);
-      color: var(--ink);
-      min-height: 100dvh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-    }
-
-    .card {
-      max-width: 420px;
-      width: 100%;
-      text-align: center;
-    }
-
-    .avatar {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 1.5rem;
-      border: 3px solid var(--border);
-    }
-
-    h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      text-wrap: balance;
-      margin-bottom: 0.35rem;
-    }
-
-    .role {
-      color: var(--ink-muted);
-      font-size: 0.95rem;
-      margin-bottom: 2rem;
-      text-wrap: pretty;
-    }
-
-    .links {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    .link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.7rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      text-decoration: none;
-      color: var(--ink);
-      font-size: 0.9rem;
-      font-weight: 500;
-      background: var(--surface);
-      transition: border-color 0.15s, background 0.15s;
-    }
-
-    .link:hover {
-      border-color: var(--accent);
-      background: var(--surface-dim);
-    }
-
-    .link:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-
-    .link .icon {
-      width: 18px;
-      height: 18px;
-      opacity: 0.6;
-    }
-
-    .footer {
-      margin-top: 2.5rem;
-      display: flex;
-      justify-content: center;
-      gap: 1.25rem;
-    }
-
-    .footer a {
-      color: var(--ink-muted);
-      text-decoration: none;
-      font-size: 0.8rem;
-      transition: color 0.15s;
-    }
-
-    .footer a:hover { color: var(--accent); }
-    .footer a:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-      border-radius: 2px;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; }
-    }
-  </style>
-</head>
-<body>
-  <main class="card">
-    <img
-      class="avatar"
-      src="download.webp"
-      alt="Yash Kalani"
-      width="96"
-      height="96"
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080b09" />
+    <meta
+      name="description"
+      content="Yash Kalani builds agentic AI tools, machine learning systems, data products, and polished software interfaces."
     />
-    <h1 style="color: var(--accent)">Yash Kalani</h1>
-    <p class="role">Data, AI &amp; Software</p>
-    <p class="role" style="margin-top: 0.5rem; font-style: italic;">Portfolio coming soon!</p>
+    <title>Yash Kalani · AI/ML &amp; Product Engineer</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/portfolio.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
 
-    <nav class="links" aria-label="Main links">
-      <a class="link" href="https://github.com/ykalani" target="_blank" rel="noopener">
-        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        GitHub
-      </a>
-      <a class="link" href="https://linkedin.com/in/ykalani" target="_blank" rel="noopener">
-        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-        LinkedIn
-      </a>
-      <a class="link" href="mailto:kalaniya@msu.edu">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-        Email
-      </a>
-    </nav>
+    <header class="site-header">
+      <nav class="site-nav shell" aria-label="Primary">
+        <a class="site-nav__brand" href="#top" aria-label="Yash Kalani, home">Yash Kalani</a>
+        <button
+          class="site-nav__toggle"
+          id="site-nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav-links"
+        >
+          <span>Menu</span>
+          <span class="site-nav__toggle-mark" aria-hidden="true"></span>
+        </button>
+        <div class="site-nav__links" id="site-nav-links">
+          <a data-nav-link href="#work">Work</a>
+          <a data-nav-link href="#experience">Experience</a>
+          <a data-nav-link href="#about">About</a>
+          <a data-nav-link href="#resume">Resume</a>
+          <a data-nav-link href="#contact">Contact</a>
+          <a class="site-nav__os" href="/yashOS/">
+            Enter yashOS
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </nav>
+    </header>
 
-    <footer class="footer">
-      <a href="/profiles">Profiles</a>
-      <a href="/dir">Directory</a>
-      <a href="/blog">Blog</a>
+    <main id="main-content">
+      <section class="hero shell" id="top" aria-labelledby="hero-title">
+        <div class="hero__copy">
+          <p class="eyebrow">AI/ML engineer · Product builder · Curious by nature</p>
+          <h1 id="hero-title">
+            I build intelligent tools for the
+            <em>paths ahead.</em>
+          </h1>
+          <p class="hero__lede">
+            I design agentic AI systems, machine learning pipelines, and polished
+            interfaces that turn complicated work into useful products.
+          </p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="#work">Explore my work</a>
+            <a class="button button--secondary" href="/yashOS/">Enter yashOS</a>
+          </div>
+          <div class="hero__utilities">
+            <p class="trail-status">
+              <span aria-hidden="true"></span>
+              Current trail: selected work
+            </p>
+            <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="false" hidden>
+              Pause ambient motion
+            </button>
+          </div>
+        </div>
+
+        <div class="hero__visual" id="parks-scene">
+          <div class="static-landscape" aria-hidden="true">
+            <div class="static-landscape__sun"></div>
+            <div class="static-landscape__ridge static-landscape__ridge--back"></div>
+            <div class="static-landscape__ridge static-landscape__ridge--front"></div>
+            <div class="static-landscape__lake"></div>
+          </div>
+          <canvas id="parks-scene-canvas" aria-hidden="true" hidden></canvas>
+          <p class="hero__field-note" aria-hidden="true">Trail tested · 2026</p>
+        </div>
+      </section>
+
+      <section class="section shell" id="work" aria-labelledby="work-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Selected trail stops</p>
+            <h2 id="work-title">Work built for real terrain.</h2>
+          </div>
+          <p>
+            Projects across AI, automation, analytics, and creative tools. The labels
+            are playful. The work is real.
+          </p>
+        </div>
+
+        <div class="project-grid">
+          <article class="project-card project-card--featured">
+            <p class="project-card__route">Experimental route</p>
+            <h3>App Forge</h3>
+            <p>
+              An interactive application generator inside a browser-based desktop.
+              Prompts become useful, isolated interfaces with a deterministic local fallback.
+            </p>
+            <ul class="tag-list" aria-label="Technologies">
+              <li>Gemini API</li>
+              <li>HTML</li>
+              <li>CSS</li>
+              <li>JavaScript</li>
+            </ul>
+            <a class="text-link" href="/yashOS/">
+              Open App Forge in yashOS
+              <span aria-hidden="true">↗</span>
+            </a>
+          </article>
+
+          <article class="project-card">
+            <p class="project-card__route">Automation trail</p>
+            <h3>AutoSched</h3>
+            <p>
+              Extracts lectures and exams from syllabi or screenshots, then syncs
+              structured events to Google Calendar. First place at Code Green Hackathon.
+            </p>
+            <ul class="tag-list" aria-label="Technologies">
+              <li>React</li>
+              <li>OpenAI API</li>
+              <li>Tesseract OCR</li>
+              <li>Google Calendar</li>
+            </ul>
+          </article>
+
+          <article class="project-card">
+            <p class="project-card__route">Analytics route</p>
+            <h3>Michigan Logistics Case Study</h3>
+            <p>
+              Analyzed transportation routes and recommended multi-carrier
+              optimizations. First place at the Broad College of Business Datathon.
+            </p>
+            <ul class="tag-list" aria-label="Technologies">
+              <li>Python</li>
+              <li>Pandas</li>
+              <li>XGBoost</li>
+              <li>Power BI</li>
+            </ul>
+          </article>
+
+          <article class="project-card">
+            <p class="project-card__route">Creative expedition</p>
+            <h3>AI-Driven Music Translation</h3>
+            <p>
+              Translates musical parameters into Ruby code through a web editor and
+              a dockerized audio runtime.
+            </p>
+            <ul class="tag-list" aria-label="Technologies">
+              <li>Next.js</li>
+              <li>FastAPI</li>
+              <li>Python</li>
+              <li>Docker</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section--tinted" id="experience" aria-labelledby="experience-title">
+        <div class="shell">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Expedition log</p>
+              <h2 id="experience-title">Experience across research and industry.</h2>
+            </div>
+          </div>
+
+          <ol class="experience-list">
+            <li>
+              <p class="experience-list__period">May 2026 – Aug 2026</p>
+              <div>
+                <h3>AI/ML Engineer Intern · GE Aerospace</h3>
+                <p>
+                  Architected agentic AI tool-calling pipelines on Bedrock with MCP
+                  servers, LLM-as-a-judge evaluation, and Databricks ingestion pipelines.
+                </p>
+              </div>
+            </li>
+            <li>
+              <p class="experience-list__period">Aug 2025 – Present</p>
+              <div>
+                <h3>AI/ML Research Intern · Facility for Rare Isotope Beams</h3>
+                <p>
+                  Implemented MCMC methods that reduced false positives by 23 percent
+                  and developed a PyTorch ResNet classifier.
+                </p>
+              </div>
+            </li>
+            <li>
+              <p class="experience-list__period">Jul 2025 – Aug 2025</p>
+              <div>
+                <h3>AI/ML Engineer Intern · American Axle &amp; Manufacturing</h3>
+                <p>
+                  Built an Ignition analytics application, cleaned raw data, and
+                  integrated Dell Technologies APIs.
+                </p>
+              </div>
+            </li>
+            <li>
+              <p class="experience-list__period">May 2025 – Jul 2025</p>
+              <div>
+                <h3>Business Automation Intern · DTE Energy</h3>
+                <p>
+                  Developed Power Apps and Power Automate workflows and an
+                  AI-powered SharePoint agent.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section shell about" id="about" aria-labelledby="about-title">
+        <div>
+          <p class="eyebrow">Field notes</p>
+          <h2 id="about-title">Serious about the work. Not always serious.</h2>
+        </div>
+        <div class="about__body">
+          <p class="about__lead">
+            I study Computer Science and Computational Mathematics with an AI focus
+            at Michigan State University. I like building systems where technical
+            depth and product craft have to coexist.
+          </p>
+          <p>
+            Outside the terminal, I love national parks, music, games, and finding
+            unnecessarily elaborate ways to make useful things more delightful.
+          </p>
+          <aside class="ranger-note">
+            <p class="ranger-note__label">Ranger note</p>
+            <p>Please do not feed the AI agents. They already have enough context.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section section--tinted" id="resume" aria-labelledby="resume-title">
+        <div class="shell resume-panel">
+          <div>
+            <p class="eyebrow">Visitor center</p>
+            <h2 id="resume-title">Want the complete field guide?</h2>
+            <p>
+              View my current resume for education, experience, tools, and project details.
+            </p>
+          </div>
+          <a class="button button--primary" href="/assets/Yash_Kalani_Resume-AI.pdf">
+            View resume
+          </a>
+        </div>
+      </section>
+
+      <section class="section shell contact" id="contact" aria-labelledby="contact-title">
+        <div>
+          <p class="eyebrow">Last stop</p>
+          <h2 id="contact-title">Let’s build something worth exploring.</h2>
+        </div>
+        <div class="contact__links">
+          <a href="mailto:kalaniya@msu.edu">Email</a>
+          <a href="https://www.linkedin.com/in/ykalani/" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/ykalani" target="_blank" rel="noopener">GitHub</a>
+          <a href="/profiles">Profiles</a>
+          <a href="/yashOS/">yashOS</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer shell">
+      <p>© 2026 Yash Kalani</p>
+      <p class="site-footer__stamp" aria-hidden="true">Trail tested</p>
     </footer>
-  </main>
-</body>
+
+  </body>
 </html>

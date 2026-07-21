@@ -1,27 +1,29 @@
 import { portfolio } from "./content.js";
 import { buildGeneratedApp, MASTER_APP_PROMPT } from "./generator.js";
+import {
+  STORAGE_KEY,
+  createDesktopState,
+  createPersistedSnapshot,
+  hydrateDesktopState,
+} from "./core/store.js";
+import {
+  closeWindowState,
+  focusWindowState,
+  getAllWindowDefinitions,
+  getWindowDefinition as findWindowDefinition,
+  minimizeWindowState,
+  openWindowState,
+} from "./core/window-manager.js";
+import {
+  formatMenuClock,
+  renderDock,
+  renderMenuBar,
+  renderWindowFrame,
+} from "./shell/render-shell.js";
 
 const app = document.getElementById("app");
-const storageKey = "portfolio:desktop-state";
 const baseWindows = portfolio.windows;
 const baseWindowById = Object.fromEntries(baseWindows.map((window) => [window.id, window]));
-
-function createBaseWindowStates() {
-  return Object.fromEntries(
-    baseWindows.map((window) => [
-      window.id,
-      {
-        open: Boolean(window.openByDefault),
-        minimized: false,
-        x: window.x,
-        y: window.y,
-        width: window.width,
-        height: window.height,
-        zIndex: window.openByDefault ? 1 : 0,
-      },
-    ]),
-  );
-}
 
 const DEFAULT_APP_STATES = {
   calculator: { display: "0", expression: "", resetOnNext: false },
@@ -87,28 +89,19 @@ const PLAUSIBLE_PROJECTS = [
 ];
 
 function createDefaultState() {
-  return {
-    booting: true,
-    startMenuOpen: false,
-    activeWindowId: "",
-    launcherQuery: "",
-    zCounter: 10,
-    windows: createBaseWindowStates(),
-    generatedWindows: [],
-    drag: null,
-    clock: "",
-    appStates: JSON.parse(JSON.stringify(DEFAULT_APP_STATES))
-  };
+  return createDesktopState({
+    definitions: baseWindows,
+    appStates: DEFAULT_APP_STATES,
+  });
 }
 
-const state = createDefaultState();
-
 function getAllWindows() {
-  return [...baseWindows, ...state.generatedWindows];
+  return getAllWindowDefinitions(baseWindows, state.generatedWindows);
 }
 
 function getWindowDefinition(id) {
-  return baseWindowById[id] ?? state.generatedWindows.find((window) => window.id === id) ?? null;
+  return baseWindowById[id]
+    ?? findWindowDefinition([], state.generatedWindows, id);
 }
 
 function getStorage() {
@@ -126,49 +119,8 @@ function persistState() {
     return;
   }
 
-  const snapshot = {
-    activeWindowId: state.activeWindowId,
-    startMenuOpen: state.startMenuOpen,
-    launcherQuery: state.launcherQuery,
-    zCounter: state.zCounter,
-    windows: Object.fromEntries(
-      Object.entries(state.windows).map(([id, winState]) => [
-        id,
-        {
-          open: winState.open,
-          minimized: winState.minimized,
-          x: winState.x,
-          y: winState.y,
-          width: winState.width,
-          height: winState.height,
-          zIndex: winState.zIndex,
-        },
-      ]),
-    ),
-    generatedWindows: state.generatedWindows.map((window) => ({
-      id: window.id,
-      kind: window.kind,
-      title: window.title,
-      label: window.label,
-      glyph: window.glyph,
-      summary: window.summary,
-      accent: window.accent,
-      accentHi: window.accentHi,
-      prompt: window.prompt,
-      tags: window.tags,
-      window: window.window,
-      panels: window.panels,
-      actions: window.actions,
-      notes: window.notes,
-      html: window.html || "",
-      css: window.css || "",
-      js: window.js || "",
-    })),
-    appStates: state.appStates,
-  };
-
   try {
-    storage.setItem(storageKey, JSON.stringify(snapshot));
+    storage.setItem(STORAGE_KEY, JSON.stringify(createPersistedSnapshot(state)));
   } catch (error) {
     console.warn("Unable to save desktop layout.", error);
   }
@@ -176,131 +128,11 @@ function persistState() {
 
 function hydrateState() {
   const storage = getStorage();
-  if (!storage) {
-    return;
-  }
-
-  const raw = storage.getItem(storageKey);
-  if (!raw) {
-    return;
-  }
-
-  let saved;
-  try {
-    saved = JSON.parse(raw);
-  } catch (error) {
-    console.warn("Ignoring invalid saved desktop layout.", error);
-    storage.removeItem(storageKey);
-    return;
-  }
-  if (!saved || typeof saved !== "object") {
-    return;
-  }
-
-  if (typeof saved.activeWindowId === "string" && state.windows[saved.activeWindowId]) {
-    state.activeWindowId = saved.activeWindowId;
-  }
-
-  if (typeof saved.startMenuOpen === "boolean") {
-    state.startMenuOpen = saved.startMenuOpen;
-  }
-
-  if (typeof saved.launcherQuery === "string") {
-    state.launcherQuery = saved.launcherQuery;
-  }
-
-  if (Number.isFinite(saved.zCounter)) {
-    state.zCounter = Math.max(state.zCounter, saved.zCounter);
-  }
-
-  const savedWindows = saved.windows && typeof saved.windows === "object" ? saved.windows : null;
-  if (!savedWindows) {
-    return;
-  }
-
-  baseWindows.forEach((window) => {
-    const winState = state.windows[window.id];
-    const savedWindow = savedWindows[window.id];
-    if (!savedWindow || typeof savedWindow !== "object") {
-      return;
-    }
-
-    if (typeof savedWindow.open === "boolean") {
-      winState.open = savedWindow.open;
-    }
-
-    if (typeof savedWindow.minimized === "boolean") {
-      winState.minimized = savedWindow.minimized;
-    }
-
-    for (const key of ["x", "y", "width", "height", "zIndex"]) {
-      if (Number.isFinite(savedWindow[key])) {
-        winState[key] = savedWindow[key];
-      }
-    }
-  });
-
-  const generatedWindows = Array.isArray(saved.generatedWindows) ? saved.generatedWindows : [];
-  state.generatedWindows = generatedWindows
-    .map((window) => {
-      if (!window || typeof window !== "object" || typeof window.id !== "string") {
-        return null;
-      }
-
-      const savedWindow = savedWindows[window.id] && typeof savedWindows[window.id] === "object" ? savedWindows[window.id] : {};
-      const width = Number.isFinite(savedWindow.width) ? savedWindow.width : Number.isFinite(window.window?.width) ? window.window.width : 600;
-      const height = Number.isFinite(savedWindow.height) ? savedWindow.height : Number.isFinite(window.window?.height) ? window.window.height : 520;
-      state.windows[window.id] = {
-        open: typeof savedWindow.open === "boolean" ? savedWindow.open : true,
-        minimized: typeof savedWindow.minimized === "boolean" ? savedWindow.minimized : false,
-        x: Number.isFinite(savedWindow.x) ? savedWindow.x : Number.isFinite(window.window?.x) ? window.window.x : 120,
-        y: Number.isFinite(savedWindow.y) ? savedWindow.y : Number.isFinite(window.window?.y) ? window.window.y : 120,
-        width,
-        height,
-        zIndex: Number.isFinite(savedWindow.zIndex) ? savedWindow.zIndex : Number.isFinite(window.zIndex) ? window.zIndex : ++state.zCounter,
-      };
-
-      return {
-        id: window.id,
-        kind: window.kind || "custom",
-        title: window.title || "Custom App",
-        label: window.label || window.title || "Custom App",
-        glyph: window.glyph || "★",
-        summary: window.summary || "",
-        accent: window.accent || "#0a3b73",
-        accentHi: window.accentHi || "#2b74c5",
-        prompt: window.prompt || "",
-        tags: Array.isArray(window.tags) ? window.tags : [],
-        html: window.html || "",
-        css: window.css || "",
-        js: window.js || "",
-        window: {
-          x: state.windows[window.id].x,
-          y: state.windows[window.id].y,
-          width: state.windows[window.id].width,
-          height: state.windows[window.id].height,
-        },
-        panels: Array.isArray(window.panels) ? window.panels : [],
-        actions: Array.isArray(window.actions) ? window.actions : [],
-        notes: Array.isArray(window.notes) ? window.notes : [],
-      };
-    })
-    .filter(Boolean);
-
-  state.zCounter = Math.max(state.zCounter, ...getAllWindows().map((window) => state.windows[window.id]?.zIndex ?? 0));
-
-  const fallbackActive = getAllWindows().find((window) => state.windows[window.id]?.open && !state.windows[window.id]?.minimized)?.id ?? "";
-  state.activeWindowId = state.windows[state.activeWindowId]?.open ? state.activeWindowId : fallbackActive;
-
-  if (saved.appStates && typeof saved.appStates === "object") {
-    state.appStates = {
-      ...JSON.parse(JSON.stringify(DEFAULT_APP_STATES)),
-      ...saved.appStates
-    };
-  }
+  const rawValue = storage ? storage.getItem(STORAGE_KEY) : null;
+  return hydrateDesktopState(createDefaultState(), rawValue);
 }
 
-hydrateState();
+let state = hydrateState();
 
 function escapeHtml(value) {
   return String(value)
@@ -322,59 +154,23 @@ function renderIconHtml(name, className = "", style = "") {
 
 function render() {
   app.innerHTML = `
-    <main class="desktop" aria-label="Retro desktop">
-      ${renderLauncher()}
-
-      <section class="desktop__icons" aria-label="Desktop shortcuts">
-        ${baseWindows
-          .map(
-            (window) => `
-              <button class="desktop-icon" type="button" data-action="open-window" data-target="${window.id}">
-                <span class="desktop-icon__glyph" aria-hidden="true">
-                  ${renderIconHtml(window.glyph, "pixel-icon--md")}
-                </span>
-                <span class="desktop-icon__label">${escapeHtml(window.label)}</span>
-              </button>
-            `,
-          )
-          .join("")}
-      </section>
+    <main class="desktop" aria-label="${escapeHtml(portfolio.name)} desktop">
+      ${renderMenuBar({
+        portfolioName: portfolio.name,
+        clock: state.clock,
+        renderIcon: renderIconHtml,
+      })}
 
       <section class="desktop__workarea" aria-label="Open windows">
-        ${getAllWindows()
-          .map((window) => renderWindow(window))
-          .join("")}
+        ${getAllWindows().map((window) => renderWindow(window)).join("")}
       </section>
 
-      ${renderStartMenu()}
-
-      <footer class="taskbar" aria-label="Taskbar">
-        <button class="taskbar__start" type="button" data-action="toggle-start" aria-expanded="${state.startMenuOpen}">
-          ${renderIconHtml("device-desktop", "pixel-icon--sm taskbar__start-icon")}
-          <span>Start</span>
-        </button>
-        <div class="taskbar__windows" aria-label="Open windows">
-          ${getAllWindows()
-            .filter((window) => state.windows[window.id]?.open)
-            .map((window) => {
-              const winState = state.windows[window.id];
-              const active = state.activeWindowId === window.id && !winState.minimized;
-              return `
-                <button
-                  class="taskbar__window ${active ? "is-active" : ""}"
-                  type="button"
-                  data-action="taskbar-window"
-                  data-target="${window.id}"
-                >
-                  ${renderIconHtml(window.glyph, "pixel-icon--xs taskbar__window-icon")}
-                  <span>${escapeHtml(window.label)}</span>
-                </button>
-              `;
-            })
-            .join("")}
-        </div>
-        <div class="taskbar__clock" aria-label="Clock">${escapeHtml(state.clock)}</div>
-      </footer>
+      ${renderDock({
+        windows: getAllWindows(),
+        windowStates: state.windows,
+        activeWindowId: state.activeWindowId,
+        renderIcon: renderIconHtml,
+      })}
 
       <footer class="desktop-footer" aria-label="Desktop Footer">
         <div class="desktop-footer__logos">
@@ -424,51 +220,23 @@ function render() {
         <p class="desktop-footer__copyright">2026 Yash Kalani All rights reserved.</p>
       </footer>
     </main>
-
-    ${state.booting ? renderBootScreen() : ""}
   `;
 }
 
 function renderWindow(window) {
-  const winState = state.windows[window.id];
-
-  if (!winState.open) {
+  const windowState = state.windows[window.id];
+  if (!windowState?.open) {
     return "";
   }
 
-  const minimizedClass = winState.minimized ? "is-minimized" : "";
-  const activeClass = state.activeWindowId === window.id && !winState.minimized ? "is-active" : "";
-  const kindClass = window.type === "generated" ? "window--generated" : "";
   const body = window.type === "generated" ? renderGeneratedWindowBody(window) : renderWindowBody(window.type);
-  const accentStyle = window.type === "generated"
-    ? `--generated-accent:${window.accent};--generated-accent-hi:${window.accentHi};`
-    : "";
-
-  return `
-    <section
-      class="window ${kindClass} ${minimizedClass} ${activeClass}"
-      data-window-id="${window.id}"
-      data-window-kind="${window.type}"
-      style="left:${winState.x}px;top:${winState.y}px;width:${winState.width}px;height:${winState.height}px;z-index:${winState.zIndex};${accentStyle}"
-      aria-label="${escapeHtml(window.title)}"
-    >
-      <header class="window__titlebar" data-drag-handle data-window-id="${window.id}" tabindex="0" aria-label="${escapeHtml(window.title)} title bar. Press arrow keys to move window.">
-        <div class="window__title">
-          ${window.type === "generated"
-            ? `<span class="window__title-icon window__title-icon--generated" aria-hidden="true">${escapeHtml(window.glyph)}</span>`
-            : `<span class="window__title-icon" aria-hidden="true">${renderIconHtml(window.glyph, "pixel-icon--xs")}</span>`}
-          <span>${escapeHtml(window.title)}</span>
-        </div>
-        <div class="window__controls">
-          <button type="button" class="window__control" data-action="minimize-window" data-target="${window.id}" aria-label="Minimize ${escapeHtml(window.title)}">_</button>
-          <button type="button" class="window__control" data-action="close-window" data-target="${window.id}" aria-label="Close ${escapeHtml(window.title)}">x</button>
-        </div>
-      </header>
-      <div class="window__body">
-        ${body}
-      </div>
-    </section>
-  `;
+  return renderWindowFrame({
+    definition: window,
+    windowState,
+    isActive: state.activeWindowId === window.id && !windowState.minimized,
+    body,
+    renderIcon: renderIconHtml,
+  });
 }
 
 function renderLauncher() {
@@ -650,20 +418,7 @@ function renderWindowBody(type) {
         </section>
       `;
     case "forge":
-      return `
-        <section class="forge">
-          <p>Browse the portfolio source that powers this desktop.</p>
-          <div class="forge__layout">
-            <div class="forge__files" aria-label="Portfolio files">
-              ${["index.html", "app.js", "content.js", "generator.js", "server.js", "styles.css"]
-                .map((file) => `<button type="button" data-action="view-forge-file" data-file="${file}">${file}</button>`)
-                .join("")}
-            </div>
-            <pre class="forge__code" data-forge-code>Select a file to inspect it.</pre>
-          </div>
-          <p class="forge__note">Source is read-only and limited to these public portfolio files.</p>
-        </section>
-      `;
+      return renderLauncher();
     case "settings":
       return renderSettingsApp();
     default:
@@ -1502,87 +1257,42 @@ function handleCalculatorInput(key, windowId) {
   persistState();
 }
 
-function renderStartMenu() {
-  return `
-    <aside class="start-menu ${state.startMenuOpen ? "is-open" : ""}" aria-label="Start menu">
-      <div class="start-menu__header">
-        <strong>${escapeHtml(portfolio.name)}</strong>
-        <span>${escapeHtml(portfolio.role)}</span>
-      </div>
-      <div class="start-menu__items">
-        ${portfolio.startMenu
-          .map(
-            (item) => `
-              <button type="button" class="start-menu__item" data-action="open-window" data-target="${item.id}">
-                ${renderIconHtml(item.icon, "pixel-icon--sm start-menu__icon")}
-                <span>${escapeHtml(item.label)}</span>
-              </button>
-            `,
-          )
-          .join("")}
-      </div>
-      <div class="start-menu__footer">
-        <button type="button" class="start-menu__item" data-action="reset-layout">
-          ${renderIconHtml("reload", "pixel-icon--sm start-menu__icon")}
-          <span>Reset Desktop</span>
-        </button>
-        <button type="button" class="start-menu__item" data-action="minimize-all">
-          ${renderIconHtml("minus", "pixel-icon--sm start-menu__icon")}
-          <span>Minimize All</span>
-        </button>
-      </div>
-    </aside>
-  `;
-}
-
-function renderBootScreen() {
-  return `
-    <div class="boot-screen" aria-hidden="true">
-      <div class="boot-screen__card">
-        <div class="boot-screen__logo">VIBE OS</div>
-        <div class="boot-screen__bar"><span></span></div>
-        <p>Loading retro workspace...</p>
-      </div>
-    </div>
-  `;
-}
-
 function focusLauncher() {
-  app.querySelector(".launcher__input")?.focus({ preventScroll: true });
+  openWindow("forge");
+  window.requestAnimationFrame(() => {
+    app.querySelector(".launcher__input")?.focus({ preventScroll: true });
+  });
 }
 
 function syncDynamicDom() {
   getAllWindows().forEach((window) => {
-    const winState = state.windows[window.id];
+    const windowState = state.windows[window.id];
     const element = app.querySelector(`[data-window-id="${window.id}"]`);
-    if (!element) {
+    if (!windowState || !element) {
       return;
     }
 
-    element.classList.toggle("is-active", state.activeWindowId === window.id && !winState.minimized);
-    element.classList.toggle("is-minimized", winState.minimized);
-    element.style.left = `${winState.x}px`;
-    element.style.top = `${winState.y}px`;
-    element.style.width = `${winState.width}px`;
-    element.style.height = `${winState.height}px`;
-    element.style.zIndex = String(winState.zIndex);
+    element.classList.toggle(
+      "is-active",
+      state.activeWindowId === window.id && !windowState.minimized,
+    );
+    element.classList.toggle("is-minimized", windowState.minimized);
+    element.style.left = `${windowState.x}px`;
+    element.style.top = `${windowState.y}px`;
+    element.style.width = `${windowState.width}px`;
+    element.style.height = `${windowState.height}px`;
+    element.style.zIndex = String(windowState.zIndex);
   });
 
-  app.querySelectorAll(".taskbar__window").forEach((button) => {
+  app.querySelectorAll(".mac-dock__item").forEach((button) => {
     const target = button.dataset.target;
-    const winState = state.windows[target];
-    button.classList.toggle("is-active", state.activeWindowId === target && !!winState && !winState.minimized);
+    const windowState = state.windows[target];
+    const isOpen = Boolean(windowState?.open);
+    const isActive = isOpen && target === state.activeWindowId && !windowState.minimized;
+    button.classList.toggle("is-open", isOpen);
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
   });
-
-  const startButton = app.querySelector(".taskbar__start");
-  if (startButton) {
-    startButton.setAttribute("aria-expanded", String(state.startMenuOpen));
-  }
-
-  const startMenu = app.querySelector(".start-menu");
-  if (startMenu) {
-    startMenu.classList.toggle("is-open", state.startMenuOpen);
-  }
 
   persistState();
 }
@@ -1626,9 +1336,9 @@ function registerGeneratedWindow(manifest) {
     zIndex: ++state.zCounter,
   };
   state.activeWindowId = windowDef.id;
-  state.startMenuOpen = false;
   state.launcherQuery = "";
   render();
+  persistState();
 }
 
 function renderDynamicCustomApp(windowDef) {
@@ -1724,7 +1434,7 @@ function showAppCompiler(query) {
         <div class="retro-terminal" id="compiler-terminal" style="flex: 1; min-height: 140px; max-height: 180px;">
           <p class="retro-log-line">[SYSTEM] Initializing compilation context...</p>
         </div>
-        <div class="boot-screen__bar" style="width: 100%; height: 12px; margin-top: 4px; border: 2px solid #111; border-radius: 4px; background: #fff; overflow: hidden;">
+        <div class="compiler-progress__bar">
           <span id="compiler-progress-bar" style="width: 0%; height: 100%; display: block; background: linear-gradient(90deg, var(--accent), var(--accent-hi, #ff69b4)); animation: none; transition: width 0.2s ease-in-out;"></span>
         </div>
       </div>
@@ -1872,106 +1582,42 @@ function launchFromQuery(query) {
 }
 
 function openWindow(id) {
-  const window = getWindowDefinition(id);
-  const winState = state.windows[id];
-  if (!window || !winState) {
+  const wasOpen = Boolean(state.windows[id]?.open);
+  if (!openWindowState(state, id, getAllWindows())) {
     return;
   }
 
-  if (winState.open) {
-    winState.minimized = false;
-    winState.zIndex = ++state.zCounter;
-    state.activeWindowId = id;
-    state.startMenuOpen = false;
+  if (wasOpen) {
     syncDynamicDom();
-    return;
-  }
-
-  winState.open = true;
-  winState.minimized = false;
-  winState.zIndex = ++state.zCounter;
-  state.activeWindowId = id;
-  state.startMenuOpen = false;
-  render();
-}
-
-async function showForgeFile(file) {
-  const code = app.querySelector("[data-forge-code]");
-  if (!code) return;
-  code.textContent = `Loading ${file}…`;
-  try {
-    const response = await fetch(`/api/source?file=${encodeURIComponent(file)}`);
-    if (!response.ok) throw new Error("Unable to load file");
-    code.textContent = await response.text();
-  } catch (error) {
-    code.textContent = error.message;
+  } else {
+    render();
+    persistState();
   }
 }
 
 function closeWindow(id) {
-  const window = getWindowDefinition(id);
-  const winState = state.windows[id];
-  if (!window || !winState) {
-    return;
+  if (closeWindowState(state, id, getAllWindows())) {
+    render();
+    persistState();
   }
-
-  winState.open = false;
-  winState.minimized = false;
-  winState.zIndex = 0;
-  state.activeWindowId = getAllWindows().find((entry) => state.windows[entry.id]?.open)?.id ?? "";
-  state.startMenuOpen = false;
-  render();
 }
 
 function focusWindow(id) {
-  const winState = state.windows[id];
-  if (!winState || !winState.open) {
-    return;
+  if (focusWindowState(state, id, getAllWindows())) {
+    syncDynamicDom();
   }
-
-  winState.minimized = false;
-  winState.zIndex = ++state.zCounter;
-  state.activeWindowId = id;
-  syncDynamicDom();
 }
 
 function minimizeWindow(id) {
-  const winState = state.windows[id];
-  if (!winState || !winState.open) {
-    return;
+  if (minimizeWindowState(state, id, getAllWindows())) {
+    syncDynamicDom();
   }
-
-  winState.minimized = true;
-  state.activeWindowId = getAllWindows().find((entry) => state.windows[entry.id]?.open && !state.windows[entry.id].minimized)?.id ?? "";
-  syncDynamicDom();
-}
-
-function minimizeAll() {
-  getAllWindows().forEach((window) => {
-    if (state.windows[window.id].open) {
-      state.windows[window.id].minimized = true;
-    }
-  });
-  state.activeWindowId = "";
-  state.startMenuOpen = false;
-  syncDynamicDom();
-}
-
-function toggleStartMenu() {
-  state.startMenuOpen = !state.startMenuOpen;
-  syncDynamicDom();
 }
 
 function resetLayout() {
-  const defaults = createDefaultState();
-  state.startMenuOpen = defaults.startMenuOpen;
-  state.activeWindowId = defaults.activeWindowId;
-  state.zCounter = defaults.zCounter;
-  state.windows = defaults.windows;
-  state.generatedWindows = [];
-  state.launcherQuery = "";
-  state.drag = null;
+  state = createDefaultState();
   render();
+  persistState();
 }
 
 function clampWindowsToViewport() {
@@ -1992,12 +1638,9 @@ function clampWindowsToViewport() {
 }
 
 function updateClock() {
-  state.clock = new Intl.DateTimeFormat([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date());
+  state.clock = formatMenuClock(new Date());
 
-  const clock = app.querySelector(".taskbar__clock");
+  const clock = app.querySelector(".mac-menubar__time");
   if (clock) {
     clock.textContent = state.clock;
   }
@@ -2005,7 +1648,7 @@ function updateClock() {
 
 function startDrag(event) {
   const handle = event.target.closest("[data-drag-handle]");
-  if (!handle || event.target.closest(".window__controls") || event.target.closest("[data-action]") || window.innerWidth < 900) {
+  if (!handle || event.target.closest(".mac-titlebar__dots") || event.target.closest("[data-action]") || window.innerWidth < 900) {
     return;
   }
 
@@ -2439,27 +2082,13 @@ function handleClick(event) {
     const target = actionButton.dataset.target;
     const query = actionButton.dataset.query;
 
+    if (action === "focus-forge") {
+      focusLauncher();
+      return;
+    }
+
     if (action === "open-window") {
       openWindow(target);
-      return;
-    }
-
-    if (action === "view-forge-file") {
-      showForgeFile(actionButton.dataset.file);
-      return;
-    }
-
-    if (action === "taskbar-window") {
-      const winState = state.windows[target];
-      if (!winState?.open) {
-        openWindow(target);
-      } else if (winState.minimized) {
-        focusWindow(target);
-      } else if (state.activeWindowId === target) {
-        minimizeWindow(target);
-      } else {
-        focusWindow(target);
-      }
       return;
     }
 
@@ -2470,16 +2099,6 @@ function handleClick(event) {
 
     if (action === "minimize-window") {
       minimizeWindow(target);
-      return;
-    }
-
-    if (action === "toggle-start") {
-      toggleStartMenu();
-      return;
-    }
-
-    if (action === "minimize-all") {
-      minimizeAll();
       return;
     }
 
@@ -2530,11 +2149,6 @@ function handleClick(event) {
   const windowFrame = event.target.closest("[data-window-id]");
   if (windowFrame) {
     focusWindow(windowFrame.dataset.windowId);
-  }
-
-  if (state.startMenuOpen && !event.target.closest(".start-menu")) {
-    state.startMenuOpen = false;
-    render();
   }
 }
 
@@ -2637,7 +2251,7 @@ function bindEvents() {
   window.addEventListener("resize", clampWindowsToViewport);
   window.addEventListener("keydown", (event) => {
     // Draggable window arrow-key move navigation
-    if (event.target.classList.contains("window__titlebar") && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+    if (event.target.classList.contains("mac-titlebar") && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
       event.preventDefault();
       const windowId = event.target.dataset.windowId;
       const winState = state.windows[windowId];
@@ -2673,27 +2287,20 @@ function bindEvents() {
       focusLauncher();
       return;
     }
-
-    if (event.key === "Escape" && state.startMenuOpen) {
-      state.startMenuOpen = false;
-      render();
-      window.requestAnimationFrame(() => focusLauncher());
-    }
   });
 }
 
 function bootstrap() {
   const currentTheme = state.appStates.settings?.theme || "default";
   applyTheme(currentTheme);
+  updateClock();
   render();
   bindEvents();
   
   // Combined timer and background dashboard simulator tick
   const bgTimer = window.setInterval(() => {
-    // 1. Clock update
     updateClock();
-    
-    // 2. Timer update
+
     const timerState = state.appStates.timer;
     if (timerState.isRunning && timerState.timeRemaining > 0) {
       timerState.timeRemaining--;
@@ -2709,7 +2316,6 @@ function bootstrap() {
       }
     }
     
-    // 3. Dashboard background simulator fluctuations
     const dashState = state.appStates.dashboard;
     if (Math.random() < 0.25) {
       const baseCpu = dashState.mode === 'idle' ? 2 : (dashState.mode === 'stress' ? 85 : 18);
@@ -2738,13 +2344,6 @@ function bootstrap() {
     }
   }, 1000);
   bgTimer.unref?.();
-
-  const bootTimer = window.setTimeout(() => {
-    state.booting = false;
-    render();
-    window.requestAnimationFrame(() => focusLauncher());
-  }, 900);
-  bootTimer.unref?.();
 
   window.addEventListener("beforeunload", () => {
     window.clearInterval(bgTimer);
