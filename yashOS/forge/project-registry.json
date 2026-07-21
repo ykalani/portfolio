@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "projects": [
+    {
+      "id": "autosched",
+      "title": "AutoSched",
+      "aliases": ["class scheduler", "class schedule", "syllabus parser", "calendar sync"],
+      "summary": "Extracts lectures and exams from uploaded syllabi or screenshots, then syncs them to Google Calendar.",
+      "technologies": ["React", "OpenAI API", "Tesseract OCR", "Google Calendar"],
+      "capabilities": ["extract dates", "organize courses", "build schedules"],
+      "scaffoldId": "schedule-planner",
+      "links": { "repository": "", "demo": "" }
+    },
+    {
+      "id": "michigan-logistics-case-study",
+      "title": "Michigan Logistics Case Study",
+      "aliases": ["logistics case study", "analyzed routes", "multi-carrier optimizations"],
+      "summary": "Analyzed routes and recommended multi-carrier optimizations. 1st Place at Broad Datathon.",
+      "technologies": ["Python", "Pandas", "XGBoost", "Power BI"],
+      "capabilities": ["analyzed routes", "recommended multi-carrier optimizations"],
+      "scaffoldId": "analytics-dashboard",
+      "links": { "repository": "", "demo": "" }
+    },
+    {
+      "id": "app-forge",
+      "title": "App Forge",
+      "aliases": ["interactive dynamic app generator", "mock macOS environment", "spin up application layers"],
+      "summary": "An interactive, dynamic app generator running in a mock macOS environment. Type prompts to dynamically spin up application layers.",
+      "technologies": ["Gemini API", "HTML/CSS/JS", "Translucency"],
+      "capabilities": ["dynamic app generator", "spin up application layers"],
+      "scaffoldId": "workflow-builder",
+      "links": { "repository": "", "demo": "" }
+    },
+    {
+      "id": "ai-driven-music-translation",
+      "title": "AI-Driven Music Translation",
+      "aliases": ["music translation", "web editor", "dockerized audio runtime"],
+      "summary": "Translates musical parameters into Ruby code through a web editor and dockerized audio runtime.",
+      "technologies": ["Next.js", "FastAPI", "Python", "Docker"],
+      "capabilities": ["translates musical parameters", "Ruby code", "dockerized audio runtime"],
+      "scaffoldId": "creative-workbench",
+      "links": { "repository": "", "demo": "" }
+    }
+  ]
+}
