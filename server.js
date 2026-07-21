@@ -1,7 +1,10 @@
-const http = require("http");
-const fs = require("fs");
-const path = require("path");
-const https = require("https");
+const http = require("node:http");
+const fs = require("node:fs");
+const path = require("node:path");
+const { createRateLimiter, clientIp } = require("./api/forge-guards.cjs");
+const {
+  errorBody, readJsonBody, disposeStoppedInboundAfterResponse, refineManifest,
+} = require("./api/forge-runtime.cjs");
 
 try {
   const envPath = path.join(__dirname, ".env");
@@ -42,41 +45,6 @@ const mimeTypes = {
   ".png": "image/png",
   ".ico": "image/x-icon",
 };
-
-const SYSTEM_PROMPT = `You are AppForge, a UI generator for a retro Windows-style portfolio desktop shell.
-Your job is to convert a user prompt into a valid JSON manifest for a browser-based application.
-
-You must return JSON ONLY. No markdown code blocks, no code fences, no leading/trailing text. Just raw JSON.
-
-Schema:
-{
-  "title": "string",
-  "kind": "custom",
-  "icon": "string",
-  "summary": "string",
-  "accent": "string",
-  "accentHi": "string",
-  "window": { "width": number, "height": number },
-  "tags": ["string"],
-  "html": "string",
-  "css": "",
-  "js": "string",
-  "panels": [],
-  "actions": [],
-  "notes": []
-}
-
-Rules for speed and quality:
-1. CSS Constraint: Always set the "css" field to an empty string "". Write NO custom styles there.
-2. Leverage Theme Utilities: Build your interface exclusively using these pre-styled, theme-aware utility classes:
-   - ".retro-panel" : Primary container background.
-   - ".retro-card" : Inner card block with physical borders and dropshadows.
-   - ".retro-btn" : Dynamic interactive button.
-   - ".retro-input" : Styled input text fields.
-   - ".retro-terminal" : Monospaced black console output block.
-3. Layout Utilities: Use inline CSS styling ONLY for flex alignment and simple spacing.
-4. JS Scoping: All JS DOM selectors MUST query inside 'container'.
-5. Keep it Concise: Limit HTML to essential interactive elements.`;
 
 // ---------- helper ----------
 function serveFile(res, filePath) {
@@ -394,36 +362,43 @@ function slug(s) {
   return encodeURIComponent(s);
 }
 
-// ---------- original server ----------
-function generateAppManifest(prompt, callback) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) { callback(new Error("GEMINI_API_KEY not set")); return; }
-  const requestBody = JSON.stringify({
-    contents: [{ role: "user", parts: [{ text: SYSTEM_PROMPT }, { text: `User request: "${prompt}"` }] }],
-    generationConfig: { responseMimeType: "application/json" }
-  });
-  const options = {
-    hostname: "generativelanguage.googleapis.com",
-    path: `/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(requestBody) }
-  };
-  const req = https.request(options, (res) => {
-    let data = "";
-    res.on("data", chunk => data += chunk);
-    res.on("end", () => {
-      if (res.statusCode !== 200) { try { callback(new Error(JSON.parse(data).error?.message || data)); } catch { callback(new Error(data)); } return; }
-      try {
-        const result = JSON.parse(data);
-        let text = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-        text = text.replace(/^```json\s*/i, "").replace(/^```/, "").replace(/```$/, "").trim();
-        callback(null, JSON.parse(text));
-      } catch (err) { callback(new Error(`Parse error: ${err.message}`)); }
-    });
-  });
-  req.on("error", err => callback(new Error(`Network error: ${err.message}`)));
-  req.write(requestBody);
-  req.end();
+const forgeRateLimiter = createRateLimiter();
+
+function bodyReadResponse(error) {
+  if (error?.code === "PAYLOAD_TOO_LARGE") {
+    return { status: 413, body: errorBody("PAYLOAD_TOO_LARGE", "Request body exceeds 64 KiB.") };
+  }
+  if (error?.code === "REQUEST_BODY_TIMEOUT") {
+    return { status: 408, body: errorBody("REQUEST_BODY_TIMEOUT", "Request body read timed out.") };
+  }
+  return { status: 400, body: errorBody("INVALID_REQUEST", "Request body must be valid JSON.") };
+}
+
+async function handleForgeRoute(req, res) {
+  if (req.method !== "POST") {
+    json(res, errorBody("METHOD_NOT_ALLOWED", "Use POST."), 405);
+    return;
+  }
+  const rate = forgeRateLimiter.check(clientIp(req.headers, req.socket?.remoteAddress, false));
+  if (!rate.ok) {
+    res.statusCode = 429;
+    res.setHeader("Retry-After", String(rate.retryAfterSeconds));
+    json(res, errorBody("RATE_LIMITED", "Too many App Forge requests."));
+    return;
+  }
+  let payload;
+  try {
+    payload = await readJsonBody(req);
+  } catch (error) {
+    const response = bodyReadResponse(error);
+    if (error?.code === "PAYLOAD_TOO_LARGE" || error?.code === "REQUEST_BODY_TIMEOUT") {
+      disposeStoppedInboundAfterResponse(error.code === "PAYLOAD_TOO_LARGE" ? req : req, res);
+    }
+    json(res, response.body, response.status);
+    return;
+  }
+  const result = await refineManifest(payload);
+  json(res, result.body, result.status);
 }
 
 async function handleRequest(req, res) {
@@ -440,18 +415,8 @@ async function handleRequest(req, res) {
       return;
     }
 
-    if (req.url === "/api/forge" && req.method === "POST") {
-      let body = "";
-      req.on("data", chunk => body += chunk);
-      req.on("end", () => {
-        let payload;
-        try { payload = JSON.parse(body); } catch { json(res, { error: "Invalid JSON" }, 400); return; }
-        if (!payload.prompt) { json(res, { error: "Missing prompt" }, 400); return; }
-        generateAppManifest(payload.prompt, (err, manifest) => {
-          if (err) { json(res, { error: err.message }, 500); return; }
-          json(res, manifest);
-        });
-      });
+    if (req.url === "/api/forge") {
+      await handleForgeRoute(req, res);
       return;
     }
 
