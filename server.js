@@ -397,6 +397,29 @@ async function handleForgeRoute(req, res) {
     json(res, response.body, response.status);
     return;
   }
+
+  if (payload && typeof payload.prompt === "string" && !payload.query) {
+    try {
+      const { compileSeedManifest } = await import("./yashOS/forge/compiler.js");
+      const { REGISTRY_VERSION } = await import("./yashOS/forge/project-registry.js");
+      const seedManifest = compileSeedManifest({
+        query: payload.prompt,
+        sourceProjectId: null,
+        scaffoldId: "dashboard",
+        inspired: true,
+      });
+      payload = {
+        query: payload.prompt,
+        projectId: null,
+        scaffoldId: "dashboard",
+        seedManifest,
+        registryVersion: REGISTRY_VERSION,
+      };
+    } catch (e) {
+      // Continue with original payload
+    }
+  }
+
   const result = await refineManifest(payload);
   json(res, result.body, result.status);
 }
