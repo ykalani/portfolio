@@ -414,24 +414,6 @@ function renderWindowBody(type) {
   }
 }
 
-function renderDynamicCustomApp(windowDef) {
-  const windowId = windowDef.id;
-  const rawCss = windowDef.css || "";
-  const scopedCss = rawCss.replaceAll("{{ID}}", windowId);
-
-  let styleTag = "";
-  if (scopedCss) {
-    styleTag = `<style>${scopedCss}</style>`;
-  }
-
-  return `
-    ${styleTag}
-    <div class="dynamic-custom-app" data-window-id="${escapeHtml(windowId)}">
-      ${windowDef.html}
-    </div>
-  `;
-}
-
 function renderGeneratedWindowBody(window) {
   if (window.html) {
     return renderDynamicCustomApp(window);
@@ -1517,13 +1499,32 @@ function generateAppFromBackend(query) {
     compiledPromiseResolve();
   });
 
+  let payload = { prompt: query };
+  try {
+    const seedManifest = compileSeedManifest({
+      query: query,
+      sourceProjectId: null,
+      scaffoldId: "analytics-dashboard",
+      inspired: true,
+    });
+    payload = {
+      query: query,
+      projectId: null,
+      scaffoldId: "analytics-dashboard",
+      seedManifest,
+      registryVersion: REGISTRY_VERSION,
+    };
+  } catch (e) {
+    payload = { prompt: query };
+  }
+
   // Start the actual fetch call in parallel
   const fetchPromise = fetch("/api/forge", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ prompt: query })
+    body: JSON.stringify(payload)
   })
   .then(res => {
     if (!res.ok) {
@@ -1731,121 +1732,6 @@ function handlePointerUp(event) {
 
   windowElement?.classList.remove("is-dragging");
   state.drag = null;
-  persistState();
-}
-
-async function launchFromQuery(query) {
-  const trimmed = query.trim();
-  if (!trimmed) return;
-
-  const submitBtn = app.querySelector(".launcher__submit");
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span>Forging app...</span>`;
-  }
-
-  let generatedApp = null;
-
-  try {
-    let payload = { prompt: trimmed };
-    try {
-      const seedManifest = compileSeedManifest({
-        query: trimmed,
-        sourceProjectId: null,
-        scaffoldId: "analytics-dashboard",
-        inspired: true,
-      });
-      payload = {
-        query: trimmed,
-        projectId: null,
-        scaffoldId: "analytics-dashboard",
-        seedManifest,
-        registryVersion: REGISTRY_VERSION,
-      };
-    } catch (e) {
-      payload = { prompt: trimmed };
-    }
-
-    const res = await fetch("/api/forge", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      if (data && (data.manifest || data.html)) {
-        const manifest = data.manifest || data;
-        generatedApp = {
-          id: `gen-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`,
-          kind: manifest.kind || "generated",
-          title: manifest.title || trimmed,
-          type: "generated",
-          icon: manifest.icon || "zap",
-          glyph: manifest.glyph || "zap",
-          summary: manifest.summary || "Generative AI Application",
-          accent: manifest.accent || "#0a84ff",
-          accentHi: manifest.accentHi || "#64d2ff",
-          prompt: trimmed,
-          tags: manifest.tags || ["AI", "Generative"],
-          window: manifest.window || { width: 620, height: 540 },
-          html: manifest.html || "",
-          css: manifest.css || "",
-          js: manifest.js || "",
-          iconPath: "./assets/macOS/Terminal_Dark.png",
-        };
-      }
-    }
-  } catch (err) {
-    console.warn("App Forge API call failed, falling back to local generator:", err);
-  }
-
-  // Fallback to local offline generator template if API is unavailable
-  if (!generatedApp) {
-    const fallback = buildGeneratedApp(trimmed, state.generatedWindows.length);
-    generatedApp = {
-      ...fallback,
-      type: "generated",
-      glyph: "zap",
-      iconPath: "./assets/macOS/Terminal_Dark.png",
-    };
-  }
-
-  // Register generated window in state
-  state.generatedWindows = state.generatedWindows || [];
-  state.generatedWindows.push(generatedApp);
-
-  const xOffset = 180 + (state.generatedWindows.length * 20) % 200;
-  const yOffset = 100 + (state.generatedWindows.length * 20) % 150;
-
-  state.windows[generatedApp.id] = {
-    open: true,
-    minimized: false,
-    x: xOffset,
-    y: yOffset,
-    width: generatedApp.window?.width || 620,
-    height: generatedApp.window?.height || 520,
-    zIndex: ++state.zCounter,
-  };
-  state.activeWindowId = generatedApp.id;
-
-  render();
-
-  // Execute custom JS if present
-  if (generatedApp.js) {
-    setTimeout(() => {
-      const container = app.querySelector(`[data-window-id="${generatedApp.id}"] .window__body`);
-      if (container) {
-        try {
-          const fn = new Function("container", "state", generatedApp.js);
-          fn(container, state);
-        } catch (e) {
-          console.error("Failed to execute generated JS:", e);
-        }
-      }
-    }, 50);
-  }
-
   persistState();
 }
 
