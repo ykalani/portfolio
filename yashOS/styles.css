@@ -43,12 +43,7 @@ body {
   margin: 0;
   font-family: var(--font);
   color: var(--text);
-  background:
-    radial-gradient(circle at 20% 20%, var(--wallpaper-hi), transparent 30%),
-    linear-gradient(90deg, rgba(230, 162, 196, 0.08) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(230, 162, 196, 0.08) 1px, transparent 1px),
-    linear-gradient(135deg, var(--desktop-1), var(--desktop-2));
-  background-size: 100% 100%, 24px 24px, 24px 24px, 100% 100%;
+  background: url('./assets/macOS/wallpaper-dark.webp') center/cover no-repeat fixed, linear-gradient(135deg, #0f172a, #020617);
   overflow: hidden;
 }
 
@@ -57,17 +52,8 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.08), transparent 12%),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.02) 0,
-      rgba(255, 255, 255, 0.02) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-  mix-blend-mode: screen;
-  opacity: 0.45;
+  background: radial-gradient(circle at 50% 30%, rgba(56, 189, 248, 0.1), transparent 60%);
+  opacity: 0.8;
 }
 
 .app-shell {
@@ -90,17 +76,19 @@ body::before {
 .mac-menubar {
   position: fixed;
   inset: 0 0 auto;
-  z-index: 100;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: var(--menubar-h);
-  padding: 0 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(18, 26, 48, 0.56);
-  color: var(--text);
-  backdrop-filter: blur(18px) saturate(145%);
-  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  min-height: 32px;
+  padding: 0 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(20, 20, 28, 0.45);
+  color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .mac-menubar__left,
@@ -108,63 +96,55 @@ body::before {
   display: flex;
   align-items: center;
   min-width: 0;
-  gap: 10px;
+  gap: 12px;
 }
 
 .mac-menubar__brand {
   display: grid;
   place-items: center;
-  width: 18px;
-  height: 18px;
+  font-size: 15px;
 }
 
-.mac-menubar__title,
-.mac-menubar__time {
-  overflow: hidden;
-  font-size: 12px;
-  line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.mac-menubar__title {
+  font-weight: 600;
+  font-size: 13px;
 }
 
 .mac-menubar__button,
 .mac-menubar__spotlight {
-  min-height: 26px;
+  min-height: 24px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 5px;
   background: transparent;
   color: inherit;
   font: inherit;
+  font-size: 13px;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .mac-menubar__button {
-  padding: 0 7px;
-  font-size: 12px;
+  padding: 0 8px;
 }
 
 .mac-menubar__spotlight {
   display: grid;
   place-items: center;
-  width: 28px;
+  width: 26px;
   padding: 0;
 }
 
 .mac-menubar__button:hover,
-.mac-menubar__spotlight:hover,
-.mac-menubar__button:focus-visible,
-.mac-menubar__spotlight:focus-visible {
-  background: rgba(255, 255, 255, 0.16);
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+.mac-menubar__spotlight:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .mac-dock-container {
   position: fixed;
-  right: 16px;
+  right: 0;
   bottom: 12px;
-  left: 16px;
-  z-index: 100;
+  left: 0;
+  z-index: 1000;
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -173,79 +153,107 @@ body::before {
 .mac-dock {
   display: flex;
   align-items: flex-end;
-  max-width: 100%;
+  max-width: 95vw;
   gap: 8px;
-  padding: 7px 10px 9px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  background: rgba(20, 28, 50, 0.58);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 22px;
+  background: rgba(25, 25, 35, 0.45);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
   pointer-events: auto;
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(30px) saturate(190%);
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
 }
 
 .mac-dock__item {
   position: relative;
-  display: grid;
-  flex: 0 0 48px;
-  justify-items: center;
-  gap: 3px;
-  min-height: 56px;
-  padding: 2px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
   border: 0;
-  border-radius: 10px;
+  border-radius: 14px;
   background: transparent;
-  color: var(--text);
   cursor: pointer;
-  transition: transform 150ms cubic-bezier(0.25, 1, 0.5, 1), background-color 150ms ease;
+  transform-origin: bottom center;
+  transition: transform 0.1s ease-out;
 }
 
-.mac-dock__item:hover,
-.mac-dock__item.is-active {
-  background: rgba(255, 255, 255, 0.13);
+.mac-dock__icon-wrapper {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.mac-dock__item:hover {
-  transform: translateY(-8px) scale(1.18);
-}
-
-.mac-dock__item:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+.mac-dock__icon-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
 }
 
 .mac-dock__icon {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 10px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.06));
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.25), 0 4px 10px rgba(0, 0, 0, 0.18);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--dock-icon-color, #0a84ff);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.mac-dock__label {
-  max-width: 48px;
-  overflow: hidden;
-  font-size: 9px;
-  line-height: 1;
-  text-overflow: ellipsis;
+.mac-dock__tooltip {
+  position: absolute;
+  top: -44px;
+  padding: 5px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 7px;
+  background: rgba(20, 20, 28, 0.82);
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.mac-dock__item:hover .mac-dock__tooltip {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .mac-dock__indicator {
   position: absolute;
-  bottom: -4px;
-  width: 5px;
-  height: 5px;
-  border-radius: 999px;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
+  bottom: -5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
   opacity: 0;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.9);
+}
+
+.mac-dock__item.is-open .mac-dock__indicator {
+  opacity: 1;
+}
+
+.mac-dock__separator {
+  width: 1px;
+  height: 44px;
+  margin: 0 4px;
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .mac-dock__item.is-open .mac-dock__indicator {
@@ -492,46 +500,45 @@ body::before {
   position: absolute;
   left: 14px;
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
 .mac-dot {
-  display: grid;
-  place-items: center;
-  width: 13px;
-  height: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
   padding: 0;
-  border: 1px solid rgba(0, 0, 0, 0.22);
+  border: 0.5px solid rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.mac-dot__icon {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.mac-titlebar__dots:hover .mac-dot__icon {
+  opacity: 1;
 }
 
 .mac-dot--close {
-  background: #ff6b61;
+  background: #ff5f57;
 }
 
 .mac-dot--minimize {
-  background: #ffc34d;
+  background: #febc2e;
 }
 
-.mac-dot::after {
-  color: rgba(31, 24, 20, 0.7);
-  font-size: 10px;
-  font-weight: 800;
-  line-height: 1;
-  opacity: 0;
-}
-
-.mac-titlebar__dots:hover .mac-dot--close::after,
-.mac-dot--close:focus-visible::after {
-  content: "×";
-  opacity: 1;
-}
-
-.mac-titlebar__dots:hover .mac-dot--minimize::after,
-.mac-dot--minimize:focus-visible::after {
-  content: "−";
-  opacity: 1;
+.mac-dot--zoom {
+  background: #28c840;
 }
 
 .mac-dot:focus-visible {
