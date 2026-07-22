@@ -166,59 +166,12 @@ function render() {
       </section>
 
       ${renderDock({
-        windows: getAllWindows(),
+        dockItems: portfolio.dock || [],
         windowStates: state.windows,
         activeWindowId: state.activeWindowId,
         renderIcon: renderIconHtml,
+        generatedWindows: state.generatedWindows || [],
       })}
-
-      <footer class="desktop-footer" aria-label="Desktop Footer">
-        <div class="desktop-footer__logos">
-          <a class="desktop-footer__logo-link" href="https://www.instagram.com/_yashtagram" target="_blank" rel="noreferrer" title="Instagram">
-            <img class="desktop-footer__logo-img" src="/assets/logos/instagram.png" alt="Instagram" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://www.linkedin.com/in/ykalani" target="_blank" rel="noreferrer" title="LinkedIn">
-            <img class="desktop-footer__logo-img" src="/assets/logos/linkedin.png" alt="LinkedIn" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://substack.com/@ykalani" target="_blank" rel="noreferrer" title="Substack">
-            <img class="desktop-footer__logo-img" src="/assets/logos/substack.png" alt="Substack" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://open.spotify.com/user/wryc9ygbfzza83otspz3wrdd2" target="_blank" rel="noreferrer" title="Spotify">
-            <img class="desktop-footer__logo-img" src="/assets/logos/spotify.png" alt="Spotify" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://i.airbuds.fm/ykal/yGCsWrQ6Uo" target="_blank" rel="noreferrer" title="Airbuds">
-            <img class="desktop-footer__logo-img" src="/assets/logos/airbuds.png" alt="Airbuds" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://github.com/ykalani" target="_blank" rel="noreferrer" title="GitHub">
-            <img class="desktop-footer__logo-img" src="/assets/logos/github.png" alt="GitHub" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://beliapp.co/app/ykalani" target="_blank" rel="noreferrer" title="Beli">
-            <img class="desktop-footer__logo-img" src="/assets/logos/beli.ico" alt="Beli" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://letterboxd.com/ykalani" target="_blank" rel="noreferrer" title="Letterboxd">
-            <img class="desktop-footer__logo-img" src="/assets/logos/letterboxd.png" alt="Letterboxd" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://www.goodreads.com/user/show/202569379-yash-kalani" target="_blank" rel="noreferrer" title="Goodreads">
-            <img class="desktop-footer__logo-img" src="/assets/logos/goodreads.png" alt="Goodreads" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://link.clashroyale.com/invite/friend/en?tag=2VGYGC8Q0" target="_blank" rel="noreferrer" title="Clash Royale">
-            <img class="desktop-footer__logo-img" src="/assets/logos/clashroyale.png" alt="Clash Royale" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://link.brawlstars.com/invite/friend/en/?tag=GUPPR8UYC" target="_blank" rel="noreferrer" title="Brawl Stars">
-            <img class="desktop-footer__logo-img" src="/assets/logos/brawlstars.png" alt="Brawl Stars" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://www.chess.com/member/minimagnus2017" target="_blank" rel="noreferrer" title="Chess.com">
-            <img class="desktop-footer__logo-img" src="/assets/logos/chess.png" alt="Chess.com" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://myanimelist.net/profile/ykal" target="_blank" rel="noreferrer" title="MyAnimeList">
-            <img class="desktop-footer__logo-img" src="/assets/logos/myanimelist.png" alt="MyAnimeList" />
-          </a>
-          <a class="desktop-footer__logo-link" href="https://discord.com/users/733835629926023209" target="_blank" rel="noreferrer" title="Discord">
-            <img class="desktop-footer__logo-img" src="/assets/logos/discord.png" alt="Discord" />
-          </a>
-        </div>
-        <p class="desktop-footer__copyright">2026 Yash Kalani All rights reserved.</p>
-      </footer>
     </main>
   `;
 }
@@ -229,7 +182,14 @@ function renderWindow(window) {
     return "";
   }
 
-  const body = window.type === "generated" ? renderGeneratedWindowBody(window) : renderWindowBody(window.type);
+  let body;
+  if (window.type === "generated") {
+    body = renderGeneratedWindowBody(window);
+  } else if (window.type === "project") {
+    body = renderProjectBody(window);
+  } else {
+    body = renderWindowBody(window.type);
+  }
   return renderWindowFrame({
     definition: window,
     windowState,
@@ -237,6 +197,29 @@ function renderWindow(window) {
     body,
     renderIcon: renderIconHtml,
   });
+}
+
+function renderProjectBody(windowDef) {
+  const project = portfolio.projects.find((p) => p.id === windowDef.projectId);
+  if (!project) {
+    return `<p class="lede">Project details unavailable.</p>`;
+  }
+
+  return `
+    <section class="panel project-detail">
+      <p class="eyebrow">Project</p>
+      <h1 class="headline">${escapeHtml(project.title)}</h1>
+      ${project.highlight ? `<p class="project-detail__highlight">${escapeHtml(project.highlight)}</p>` : ""}
+      <p class="lede">${escapeHtml(project.description)}</p>
+      <div class="chip-row">
+        ${project.tags.map((tag) => `<span class="chip chip--dim">${escapeHtml(tag)}</span>`).join("")}
+      </div>
+      <div class="contact-form__actions" style="margin-top:16px">
+        <button class="button" type="button" data-action="focus-forge">Open in App Forge</button>
+        <button class="button button--ghost" type="button" data-action="open-window" data-target="projects">All Projects</button>
+      </div>
+    </section>
+  `;
 }
 
 function renderLauncher() {
@@ -251,11 +234,11 @@ function renderLauncher() {
     .join("");
 
   return `
-    <section class="launcher" aria-label="App launcher">
+    <section class="launcher" aria-label="App Forge infinite portfolio">
       <div class="launcher__hero">
-        ${renderIconHtml("zap", "launcher__icon-pixel")}
+        <span class="launcher__icon-badge" aria-hidden="true">${renderIconHtml("zap", "pixel-icon--lg")}</span>
         <div>
-          <p class="eyebrow">App forge</p>
+          <p class="eyebrow">Infinite portfolio</p>
           <h1 class="launcher__title">${escapeHtml(portfolio.launcher.title)}</h1>
           <p class="launcher__subtitle">${escapeHtml(portfolio.launcher.subtitle)}</p>
         </div>
@@ -286,9 +269,9 @@ function renderLauncher() {
       </div>
 
       <div class="launcher__footnote">
-        <span>Master prompt ready for backend generation.</span>
+        <span>Search projects or generate live apps</span>
         <span class="launcher__divider" aria-hidden="true"></span>
-        <span>JSON contract loaded locally.</span>
+        <span>Gemini when available · offline templates as fallback</span>
       </div>
     </section>
   `;
@@ -332,19 +315,22 @@ function renderWindowBody(type) {
       return `
         <div class="stack">
           ${portfolio.projects
-            .map(
-              (project) => `
-                <article class="project-card">
+            .map((project) => {
+              const dockWindow = baseWindows.find((w) => w.projectId === project.id || (project.id === "forge" && w.id === "forge"));
+              const openTarget = dockWindow?.id || "forge";
+              return `
+                <article class="project-card project-card--interactive" data-action="open-window" data-target="${escapeHtml(openTarget)}" role="button" tabindex="0">
                   <div class="project-card__header">
                     <h2>${escapeHtml(project.title)}</h2>
+                    ${project.highlight ? `<span class="project-card__badge">${escapeHtml(project.highlight)}</span>` : ""}
                   </div>
                   <p>${escapeHtml(project.description)}</p>
                   <div class="chip-row">
                     ${project.tags.map((tag) => `<span class="chip chip--dim">${escapeHtml(tag)}</span>`).join("")}
                   </div>
                 </article>
-              `,
-            )
+              `;
+            })
             .join("")}
         </div>
       `;
@@ -505,56 +491,62 @@ function renderDefaultGeneratedWindowBody(window) {
 }
 
 function applyTheme(themeName) {
-  const themes = ["theme-default", "theme-classic", "theme-cyberpunk", "theme-glassmorphic", "theme-matrix"];
-  themes.forEach(t => document.body.classList.remove(t));
-  document.body.classList.add(`theme-${themeName}`);
-  
+  const themes = ["theme-default", "theme-midnight", "theme-aurora", "theme-light", "theme-cyberpunk"];
+  const legacyMap = {
+    classic: "default",
+    glassmorphic: "aurora",
+    matrix: "midnight",
+  };
+  const resolved = themes.includes(`theme-${themeName}`) ? themeName : (legacyMap[themeName] || "default");
+  themes.forEach((t) => document.body.classList.remove(t));
+  document.body.classList.add(`theme-${resolved}`);
+
   if (!state.appStates.settings) {
     state.appStates.settings = { theme: "default" };
   }
-  state.appStates.settings.theme = themeName;
-  
-  const settingsWindow = getAllWindows().find(w => w.id === "settings" && state.windows[w.id]?.open);
+  state.appStates.settings.theme = resolved;
+
+  const settingsWindow = getAllWindows().find((w) => w.id === "settings" && state.windows[w.id]?.open);
   if (settingsWindow) {
     const bodyElement = app.querySelector(`[data-window-id="settings"] .window__body`);
     if (bodyElement) {
       bodyElement.innerHTML = renderSettingsApp();
     }
   }
-  
+
   persistState();
 }
 
 function renderSettingsApp() {
   const currentTheme = state.appStates.settings?.theme || "default";
   const themes = [
-    { id: "default", name: "Retro Purple", colors: ["#3b2d54", "#fcf8ee", "#ffd166", "#653c94"] },
-    { id: "classic", name: "Windows 95 Classic", colors: ["#008080", "#d4d0c8", "#d4d0c8", "#000080"] },
-    { id: "cyberpunk", name: "Synthwave Neon", colors: ["#0d0115", "#1a0826", "#ff007f", "#00ffff"] },
-    { id: "glassmorphic", name: "Glassmorphic Glow", colors: ["#1a1528", "rgba(255,255,255,0.45)", "rgba(255,255,255,0.5)", "#653c94"] },
-    { id: "matrix", name: "Matrix Terminal", colors: ["#000000", "#0a0f08", "#0f2c0b", "#1eff00"] }
+    { id: "default", name: "Tahoe Blue", colors: ["#0b1a33", "#1a2744", "#0a84ff", "#5ac8fa"] },
+    { id: "midnight", name: "Midnight", colors: ["#05070f", "#12141a", "#0a84ff", "#ffffff"] },
+    { id: "aurora", name: "Aurora", colors: ["#0c1220", "#1a1030", "#7f5af0", "#2cb67d"] },
+    { id: "light", name: "Light Glass", colors: ["#c8d6e8", "#f5f7fa", "#007aff", "#1d1d1f"] },
+    { id: "cyberpunk", name: "Synthwave", colors: ["#0d0115", "#1a0826", "#ff007f", "#00ffff"] },
   ];
 
   return `
     <section class="panel settings-app">
-      <p class="eyebrow">Control Panel</p>
-      <h2 class="headline">Theme Selector</h2>
-      <p class="lede">Choose a visual system to transform your retro desktop environment instantly.</p>
-      
+      <p class="eyebrow">Appearance</p>
+      <h2 class="headline">Theme</h2>
+      <p class="lede">Pick a modern desktop look for yashOS.</p>
+
       <div class="theme-grid">
-        ${themes.map(t => {
+        ${themes.map((t) => {
           const active = t.id === currentTheme ? "is-active-theme" : "";
           return `
             <div class="theme-card ${active}" data-action="set-theme" data-theme="${t.id}">
               <div class="theme-card__preview">
-                <span class="theme-card__dot" style="background-color: ${t.colors[0]}" title="Desktop Background"></span>
-                <span class="theme-card__dot" style="background-color: ${t.colors[1]}" title="Window Panel"></span>
-                <span class="theme-card__dot" style="background-color: ${t.colors[2]}" title="Chrome/Controls"></span>
-                <span class="theme-card__dot" style="background-color: ${t.colors[3]}" title="Title Bar"></span>
+                <span class="theme-card__dot" style="background-color: ${t.colors[0]}" title="Desktop"></span>
+                <span class="theme-card__dot" style="background-color: ${t.colors[1]}" title="Panel"></span>
+                <span class="theme-card__dot" style="background-color: ${t.colors[2]}" title="Accent"></span>
+                <span class="theme-card__dot" style="background-color: ${t.colors[3]}" title="Highlight"></span>
               </div>
               <div class="theme-card__info">
                 <strong class="theme-card__name">${escapeHtml(t.name)}</strong>
-                <span class="theme-card__status">${t.id === currentTheme ? "Active" : "Apply Theme"}</span>
+                <span class="theme-card__status">${t.id === currentTheme ? "Active" : "Apply"}</span>
               </div>
             </div>
           `;
@@ -2092,6 +2084,11 @@ function handleClick(event) {
       return;
     }
 
+    if (action === "focus-window") {
+      focusWindow(target);
+      return;
+    }
+
     if (action === "close-window") {
       closeWindow(target);
       return;
@@ -2287,6 +2284,50 @@ function bindEvents() {
       focusLauncher();
       return;
     }
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    const dock = e.target.closest("#mac-dock");
+    if (dock) {
+      handleDockMouseMove(e);
+    } else {
+      handleDockMouseLeave();
+    }
+  });
+}
+
+function handleDockMouseMove(event) {
+  const dock = document.getElementById("mac-dock");
+  if (!dock) return;
+  const items = Array.from(dock.querySelectorAll(".mac-dock__item"));
+  if (!items.length) return;
+
+  const rect = dock.getBoundingClientRect();
+  const mouseX = event.clientX - rect.left;
+
+  const MAX_SCALE = 1.2;
+  const SIGMA = 64;
+  const LIFT = 18;
+
+  items.forEach((item) => {
+    const itemRect = item.getBoundingClientRect();
+    const center = (itemRect.left + itemRect.right) / 2 - rect.left;
+    const d = mouseX - center;
+    const scale = 1 + (MAX_SCALE - 1) * Math.exp(-(d * d) / (2 * SIGMA * SIGMA));
+    const lift = (LIFT * (scale - 1)) / (MAX_SCALE - 1);
+
+    item.style.transform = `scale(${scale.toFixed(3)}) translateY(${-lift.toFixed(2)}px)`;
+    item.style.zIndex = scale > 1.02 ? "20" : "1";
+  });
+}
+
+function handleDockMouseLeave() {
+  const dock = document.getElementById("mac-dock");
+  if (!dock) return;
+  const items = dock.querySelectorAll(".mac-dock__item");
+  items.forEach((item) => {
+    item.style.transform = "";
+    item.style.zIndex = "";
   });
 }
 
