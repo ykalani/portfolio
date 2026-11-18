@@ -1,6 +1,8 @@
 {
   "cleanUrls": true,
+  "functions": { "api/index.js": { "includeFiles": "old.html" } },
   "redirects": [
+    { "source": "/postcardfolio/", "destination": "/", "permanent": true },
     { "source": "/postcardfolio/:path*", "destination": "/:path*", "permanent": true },
     { "source": "/experience", "destination": "/experiences", "permanent": true },
     { "source": "/experience.html", "destination": "/experiences", "permanent": true }

@@ -472,7 +472,7 @@ async function handleRequest(req, res) {
 
     const pathname = req.url.split("?")[0];
     const requestPath = pathname === "/" || pathname === "/old" || pathname === "/old/"
-      ? "/index.html"
+      ? "/old.html"
       : pathname;
     let candidatePaths;
     {
