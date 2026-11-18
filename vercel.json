@@ -1,9 +1,16 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/postcardfolio/:path*", "destination": "/:path*", "permanent": true },
+    { "source": "/experience", "destination": "/experiences", "permanent": true },
+    { "source": "/experience.html", "destination": "/experiences", "permanent": true }
+  ],
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/index"
-    }
+    { "source": "/", "destination": "https://postcardfolio.vercel.app/" },
+    { "source": "/:page(experiences|projects|writing|tech-blog|about|credits)", "destination": "https://postcardfolio.vercel.app/:page" },
+    { "source": "/:file(style.css|about.css|banff.css|cloud-transition.css|paper.css|postcard.css|cloud-transition.js|paper.js|postcard.js|scene.js)", "destination": "https://postcardfolio.vercel.app/:file" },
+    { "source": "/assets/:scene(banff|beaumont|great-sand-dunes|hawaii-volcanoes|olympic|sleeping-bear)/:path*", "destination": "https://postcardfolio.vercel.app/assets/:scene/:path*" },
+    { "source": "/assets/:file(yosemite-.*|cloud-curtain-.*|pfp_stamp.webp)", "destination": "https://postcardfolio.vercel.app/assets/:file" },
+    { "source": "/(.*)", "destination": "/api/index" }
   ]
 }
