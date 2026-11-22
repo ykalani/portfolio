@@ -1,5 +1,7 @@
 # yash.kalani.name
 
+##### THIS PORTFOLIO HAS BEEN UPDATED VISIT github.com/ykalani/postcardfolio!!!
+
 Yash Kalani's personal website — a multi-surface portfolio deployed on Vercel at [yash.kalani.name](https://yash.kalani.name).
 
 The site is a small Node server (`server.js`) fronted by a Vercel serverless function (`api/index.js`). It routes requests to four distinct surfaces that share a common design language.
