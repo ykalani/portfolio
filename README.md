@@ -1,6 +1,6 @@
 # yash.kalani.name
 
-##### THIS PORTFOLIO HAS BEEN UPDATED VISIT github.com/ykalani/postcardfolio!!!
+##### THIS PORTFOLIO HAS BEEN UPDATED VISIT https://github.com/ykalani/postcardfolio!!
 
 Yash Kalani's personal website — a multi-surface portfolio deployed on Vercel at [yash.kalani.name](https://yash.kalani.name).
 
